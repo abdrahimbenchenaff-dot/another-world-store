@@ -458,14 +458,17 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
  </div>
 </section>
 
-<!-- GUESS THE BRAND -->
+
+<!-- WEEKLY STREET MARKET CHALLENGE -->
 <section class="game-section" id="game">
  <div class="section">
   <div class="game-box">
 
    <p class="eyebrow">ANOTHER WORLD EXCLUSIVE</p>
 
-   <h2 class="game-title">GUESS THE BRAND</h2>
+   <h2 class="game-title">
+    WEEKLY CHALLENGE
+   </h2>
 
    <h3 class="game-discount"
        data-en="WIN 15% DISCOUNT"
@@ -473,22 +476,18 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
     WIN 15% DISCOUNT
    </h3>
 
-   <p class="game-description"
-      data-en="Enter your name, choose the correct brand and win a 15% discount!"
-      data-ar="أدخل اسمك واختر العلامة التجارية الصحيحة واربح خصماً بنسبة 15%!">
-    Enter your name, choose the correct brand and win a 15% discount!
-   </p>
+   <h2 id="weeklyQuestion"
+       class="game-title"
+       data-en="WHAT DID I FIND AT THE STREET MARKET LAST WEEK?"
+       data-ar="ماذا وجدت في سوق الشارع الأسبوع الماضي؟">
+    WHAT DID I FIND AT THE STREET MARKET LAST WEEK?
+   </h2>
 
-   <!-- DYNAMIC GAME IMAGE -->
-   <div class="game-image-container">
-    <p id="gameImageLoading" class="game-image-loading">
-     LOADING GAME IMAGE...
-    </p>
-    <img id="gameImage"
-         src=""
-         alt="Guess the brand"
-         style="display:none;">
-   </div>
+   <p class="game-description"
+      data-en="Enter your name and choose your answer."
+      data-ar="أدخل اسمك واختر إجابتك.">
+    Enter your name and choose your answer.
+   </p>
 
    <input
     type="text"
@@ -497,65 +496,48 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
     maxlength="60"
     placeholder="YOUR NAME"
     autocomplete="name"
-    aria-label="Your name"
-   >
+    aria-label="Your name">
 
-   <div class="brand-options">
-
-    <button class="brand-option" type="button" data-answer="NIKE">NIKE</button>
-
-    <button class="brand-option" type="button" data-answer="ADIDAS">ADIDAS</button>
-
-    <button class="brand-option" type="button" data-answer="PUMA">PUMA</button>
-
-    <button class="brand-option" type="button" data-answer="REEBOK">REEBOK</button>
-
-    <button class="brand-option" type="button" data-answer="CHAMPION">CHAMPION</button>
-
-    <button class="brand-option" type="button" data-answer="FILA">FILA</button>
-
-    <button class="brand-option" type="button" data-answer="LACOSTE">LACOSTE</button>
-
+   <div id="weeklyOptions" class="brand-options">
+    <p class="game-description"
+       data-en="WEEKLY OPTIONS WILL BE PUBLISHED HERE."
+       data-ar="ستظهر خيارات التحدي الأسبوعي هنا.">
+     WEEKLY OPTIONS WILL BE PUBLISHED HERE.
+    </p>
    </div>
 
-   <button id="submitGame" class="game-submit" type="button"
-           data-en="SUBMIT ANSWER" data-ar="إرسال الإجابة">
+   <button id="submitGame"
+           class="game-submit"
+           type="button"
+           disabled
+           data-en="SUBMIT ANSWER"
+           data-ar="إرسال الإجابة">
     SUBMIT ANSWER
    </button>
 
-   <p id="gameMessage" class="game-message" aria-live="polite"></p>
-
-   <!-- WINNER CARD -->
-   <div id="winnerCard" class="winner-card">
-    <h3 data-en="CONGRATULATIONS!"
-        data-ar="تهانينا!">
-     CONGRATULATIONS!
-    </h3>
-
-    <p data-en="YOU WON A 15% DISCOUNT!"
-       data-ar="لقد ربحت خصماً بنسبة 15%!">
-     YOU WON A 15% DISCOUNT!
-    </p>
-
-    <span id="winnerCode" class="winner-code"></span>
-
-    <button id="copyWinnerCode" class="copy-code" type="button"
-            data-en="COPY DISCOUNT CODE"
-            data-ar="انسخ كود الخصم">
-     COPY DISCOUNT CODE
-    </button>
-   </div>
-
-   <p class="game-description"
-      data-en="STAY TUNED FOR SOMETHING SPECIAL."
-      data-ar="ترقبوا شيئاً مميزاً.">
-    STAY TUNED FOR SOMETHING SPECIAL.
+   <p id="gameMessage"
+      class="game-message"
+      aria-live="polite"
+      data-en="THE NEXT CHALLENGE WILL BE ANNOUNCED SOON."
+      data-ar="سيتم الإعلان عن التحدي القادم قريباً.">
+    THE NEXT CHALLENGE WILL BE ANNOUNCED SOON.
    </p>
+
+   <div class="game-description">
+    <p data-en="OPEN: SATURDAY"
+       data-ar="الافتتاح: السبت">OPEN: SATURDAY</p>
+
+    <p data-en="CLOSE: THURSDAY"
+       data-ar="الإغلاق: الخميس">CLOSE: THURSDAY</p>
+
+    <p data-en="MAXIMUM 6 WINNERS"
+       data-ar="الحد الأقصى 6 فائزين">MAXIMUM 6 WINNERS</p>
+   </div>
 
   </div>
  </div>
 </section>
-
+ 
 <!-- COLLECTION -->
 <section class="products" id="products">
  <div class="section">
