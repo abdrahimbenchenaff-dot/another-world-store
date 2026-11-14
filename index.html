@@ -1225,24 +1225,32 @@ try{
  localStorage.removeItem("aw-game-winner");
 }
 
-/* LANGUAGE AND THEME BUTTONS */
 
-languageBtn.addEventListener("click",function(){
- currentLanguage = currentLanguage === "en" ? "ar" : "en";
- localStorage.setItem("aw-language",currentLanguage);
- updateLanguage();
-});
+/* LANGUAGE AND THEME BUTTONS - FIXED */
 
-themeBtn.addEventListener("click",function(){
- isLight = !isLight;
- updateTheme();
-});
+if (languageBtn) {
+  languageBtn.onclick = function () {
+    currentLanguage = currentLanguage === "en" ? "ar" : "en";
+
+    localStorage.setItem("aw-language", currentLanguage);
+
+    updateLanguage();
+  };
+}
+
+if (themeBtn) {
+  themeBtn.onclick = function () {
+    isLight = !isLight;
+    updateTheme();
+  };
+}
 
 /* INITIALIZE */
 
-updateTheme();
 updateLanguage();
+updateTheme();
 loadGameSettings();
+ 
 
 </script>
 
