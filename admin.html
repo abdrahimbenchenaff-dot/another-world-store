@@ -6,76 +6,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#11100e">
 <title>ANOTHER WORLD | Admin</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
 body{
  margin:0;background:#11100e;color:#eee4d3;
- font-family:Arial,sans-serif;padding:25px;
+ font-family:Arial,sans-serif;padding:20px
 }
-.container{max-width:1050px;margin:auto}
+.container{max-width:1100px;margin:auto}
 h1,h2{font-family:Georgia,serif;letter-spacing:2px}
 h1{text-align:center;margin:25px 0}
 .subtitle{text-align:center;color:#cdb99a;font-size:12px;letter-spacing:3px}
-.panel{
- background:#1e1a15;border:1px solid #554633;
- padding:25px;margin:20px 0;
-}
-input,select{
- display:block;width:100%;padding:14px;margin:12px 0;
+.panel{background:#1e1a15;border:1px solid #554633;padding:22px;margin:20px 0}
+input,select,textarea{
+ display:block;width:100%;padding:13px;margin:10px 0;
  background:#11100e;color:#eee4d3;
  border:1px solid #554633;font-size:14px;
+ border-radius:0
 }
-input[type=file]{padding:12px}
+textarea{min-height:100px;resize:vertical}
 button{
- padding:13px 20px;background:#cdb99a;
- color:#17130f;border:0;font-weight:bold;
- cursor:pointer;margin:5px 0;
+ padding:13px 18px;background:#cdb99a;color:#17130f;
+ border:0;font-weight:bold;cursor:pointer;margin:5px 4px 5px 0
 }
 button:disabled{opacity:.5;cursor:not-allowed}
 .primary{width:100%}
+.secondary{background:#554633;color:#eee4d3}
+.danger{background:#9c5145;color:white}
 .hidden{display:none!important}
 .message{color:#d98a78;font-size:13px;line-height:1.7}
 .success{color:#80d5a0}
-.stats{
- display:grid;grid-template-columns:repeat(2,1fr);gap:15px;
-}
-.stat{
- padding:22px;background:#211c16;
- border:1px solid #554633;text-align:center;
-}
+.muted{color:#cdb99a;font-size:12px;line-height:1.7}
+.field-label{display:block;color:#cdb99a;font-size:13px;margin-top:18px}
+.hint{color:#a99a83;font-size:11px;line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat{padding:20px;background:#211c16;border:1px solid #554633;text-align:center}
 .stat strong{display:block;font-size:30px;margin-top:10px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:550px}
-th,td{
- padding:13px;text-align:left;
- border-bottom:1px solid #554633;font-size:12px;
-}
-th{color:#cdb99a;letter-spacing:1px}
-.muted{color:#cdb99a;font-size:12px}
-.topbar{
- display:flex;justify-content:space-between;
- align-items:center;gap:10px;flex-wrap:wrap;
-}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .badge{color:#80d5a0;font-size:12px}
-.preview{
- width:100%;max-width:350px;max-height:350px;
- object-fit:contain;background:#11100e;
- border:1px solid #554633;padding:8px;
- margin:12px 0;
-}
-.field-label{
- display:block;color:#cdb99a;font-size:13px;
- margin-top:18px;
-}
-.hint{color:#a99a83;font-size:11px;line-height:1.6}
+.option-box{border:1px solid #554633;padding:12px;margin:12px 0}
+.option-heading{color:#cdb99a;font-size:12px;letter-spacing:1px}
+.correct-choice{display:flex;align-items:center;gap:10px}
+.correct-choice input{width:auto;margin:0}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #554633;font-size:12px}
+th{color:#cdb99a;letter-spacing:1px}
+.status{font-size:11px;color:#80d5a0}
 footer{text-align:center;color:#cdb99a;font-size:11px;padding:30px}
 @media(max-width:500px){
- body{padding:12px}
- .panel{padding:16px}
+ body{padding:10px}
+ .panel{padding:14px}
  .stats{gap:8px}
+ button{font-size:11px;padding:12px}
 }
 </style>
 </head>
@@ -92,17 +76,10 @@ footer{text-align:center;color:#cdb99a;font-size:11px;padding:30px}
 <p class="muted">Sign in with your administrator account.</p>
 
 <form id="loginForm">
-<input id="email" type="email"
- placeholder="Administrator email" required autocomplete="username">
-
-<input id="password" type="password"
- placeholder="Password" required autocomplete="current-password">
-
-<button class="primary" id="loginButton" type="submit">
-SIGN IN
-</button>
+<input id="email" type="email" placeholder="Administrator email" required autocomplete="username">
+<input id="password" type="password" placeholder="Password" required autocomplete="current-password">
+<button class="primary" id="loginButton" type="submit">SIGN IN</button>
 </form>
-
 <p id="loginMessage" class="message" aria-live="polite"></p>
 </div>
 
@@ -117,10 +94,11 @@ SIGN IN
 </div>
 <div>
 <button id="refreshButton">REFRESH DATA</button>
-<button id="logoutButton">LOG OUT</button>
+<button id="logoutButton" class="secondary">LOG OUT</button>
 </div>
 </div>
 
+<!-- STATISTICS -->
 <div class="stats">
 <div class="stat">
 PARTICIPANTS
@@ -132,63 +110,94 @@ WINNERS
 </div>
 </div>
 
-<!-- GAME SETTINGS -->
+<!-- CHALLENGE EDITOR -->
 <div class="panel">
-<h2>GAME SETTINGS</h2>
-<p class="muted">
-Upload a new T-shirt image and select its correct brand.
-</p>
+<h2>WEEKLY CHALLENGE</h2>
+<p class="muted">Create and manage your questions and answers.</p>
 
-<label class="field-label" for="gameImage">
-1. UPLOAD T-SHIRT IMAGE
-</label>
-
-<input id="gameImage" type="file" accept="image/*">
-
-<p class="hint">
-Choose an image without the visible brand logo.
-Maximum file size: 5 MB.
-</p>
-
-<img id="imagePreview" class="preview hidden"
- alt="Game image preview">
-
-<p id="imageStatus" class="muted">
-No image selected.
-</p>
-
-<label class="field-label" for="correctBrand">
-2. SELECT CORRECT BRAND
-</label>
-
-<select id="correctBrand">
-<option value="NIKE">NIKE</option>
-<option value="ADIDAS">ADIDAS</option>
-<option value="PUMA">PUMA</option>
-<option value="REEBOK">REEBOK</option>
-<option value="CHAMPION">CHAMPION</option>
-<option value="FILA">FILA</option>
+<label class="field-label" for="challengeSelector">EXISTING CHALLENGES</label>
+<select id="challengeSelector">
+<option value="">CREATE A NEW CHALLENGE</option>
 </select>
 
-<button id="publishButton" class="primary" type="button">
-PUBLISH NEW GAME
+<button type="button" id="newChallengeButton" class="secondary">
+NEW QUESTION
 </button>
 
-<p id="gameMessage" class="message" aria-live="polite"></p>
+<input type="hidden" id="challengeId">
+
+<label class="field-label" for="questionInput">QUESTION</label>
+<textarea id="questionInput" maxlength="1000"
+placeholder="Write your weekly question here..."></textarea>
+
+<p class="hint">You can create between 2 and 6 answer options.</p>
+
+<div id="optionsContainer"></div>
+
+<label class="field-label" for="correctOption">
+CORRECT ANSWER
+</label>
+<select id="correctOption">
+<option value="">Select the correct answer</option>
+</select>
+
+<label class="field-label" for="opensAt">OPENING DATE (OPTIONAL)</label>
+<input type="datetime-local" id="opensAt">
+
+<label class="field-label" for="closesAt">CLOSING DATE (OPTIONAL)</label>
+<input type="datetime-local" id="closesAt">
+
+<p class="hint">
+Maximum winners: 6<br>
+Discount for winners: 15%
+</p>
+
+<button type="button" id="saveDraftButton" class="primary">
+SAVE AS DRAFT
+</button>
+
+<button type="button" id="publishButton" class="primary">
+PUBLISH CHALLENGE
+</button>
+
+<button type="button" id="closeButton" class="secondary">
+CLOSE CHALLENGE
+</button>
+
+<p id="editorMessage" class="message" aria-live="polite"></p>
+</div>
+
+<!-- CHALLENGE HISTORY -->
+<div class="panel">
+<h2>CHALLENGE HISTORY</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>QUESTION</th>
+<th>STATUS</th>
+<th>WINNERS</th>
+<th>DATE</th>
+</tr>
+</thead>
+<tbody id="challengesBody"></tbody>
+</table>
+</div>
+<p id="challengesMessage" class="message"></p>
 </div>
 
 <!-- PARTICIPANTS -->
 <div class="panel">
 <h2>GAME PARTICIPANTS</h2>
-<p class="muted">Latest game attempts</p>
-
+<p class="muted">Latest weekly challenge attempts</p>
 <div class="table-wrap">
 <table>
 <thead>
 <tr>
 <th>NAME</th>
-<th>ANSWER</th>
+<th>ANSWER ID</th>
 <th>CORRECT</th>
+<th>WINNER</th>
 <th>DATE</th>
 </tr>
 </thead>
@@ -202,7 +211,6 @@ PUBLISH NEW GAME
 <div class="panel">
 <h2>GAME WINNERS</h2>
 <p class="muted">Winner records and discount codes</p>
-
 <div class="table-wrap">
 <table>
 <thead>
@@ -236,21 +244,19 @@ SUPABASE_URL,
 SUPABASE_ANON_KEY
 );
 
-const loginPanel = document.getElementById("loginPanel");
-const dashboard = document.getElementById("dashboard");
-const loginMessage = document.getElementById("loginMessage");
+const $ = id => document.getElementById(id);
 
-const gameImage = document.getElementById("gameImage");
-const imagePreview = document.getElementById("imagePreview");
-const imageStatus = document.getElementById("imageStatus");
-const correctBrand = document.getElementById("correctBrand");
-const publishButton = document.getElementById("publishButton");
-const gameMessage = document.getElementById("gameMessage");
+const loginPanel = $("loginPanel");
+const dashboard = $("dashboard");
+const loginMessage = $("loginMessage");
 
-let selectedImageFile = null;
-let currentGameImageUrl = "";
-let previewObjectUrl = null;
+const optionLetters = ["A","B","C","D","E","F"];
 
+let challenges = [];
+let selectedChallenge = null;
+let busy = false;
+
+/* MESSAGES */
 function showError(element,message){
  element.textContent = message;
  element.classList.remove("success");
@@ -261,21 +267,34 @@ function showSuccess(element,message){
  element.classList.add("success");
 }
 
+function formatDate(value){
+ if(!value) return "—";
+ return new Date(value).toLocaleString();
+}
+
+function localDateValue(value){
+ if(!value) return "";
+ const date = new Date(value);
+ if(Number.isNaN(date.getTime())) return "";
+ const offset = date.getTimezoneOffset();
+ return new Date(date.getTime()-offset*60000)
+  .toISOString().slice(0,16);
+}
+
+function escapeText(value){
+ return String(value ?? "");
+}
+
 function addCell(row,value){
  const cell = document.createElement("td");
  cell.textContent = value == null ? "—" : String(value);
  row.appendChild(cell);
 }
 
-function formatDate(value){
- if(!value) return "—";
- return new Date(value).toLocaleString();
-}
-
-/* VERIFY ADMIN */
-async function verifyAdmin(){
+/* ADMIN VERIFICATION */
+async function checkAdmin(){
  const {data:{session},error:sessionError} =
- await db.auth.getSession();
+  await db.auth.getSession();
 
  if(sessionError || !session){
   loginPanel.classList.remove("hidden");
@@ -283,10 +302,9 @@ async function verifyAdmin(){
   return false;
  }
 
- const {data,error:adminError} =
- await db.rpc("is_admin");
+ const {data,error} = await db.rpc("is_admin");
 
- if(adminError || data !== true){
+ if(error || data !== true){
   await db.auth.signOut();
   loginPanel.classList.remove("hidden");
   dashboard.classList.add("hidden");
@@ -296,335 +314,539 @@ async function verifyAdmin(){
 
  loginPanel.classList.add("hidden");
  dashboard.classList.remove("hidden");
-
- document.getElementById("adminEmail").textContent =
- session.user.email || "";
+ $("adminEmail").textContent = session.user.email || "";
 
  await loadDashboard();
  return true;
 }
 
-/* LOAD PARTICIPANTS, WINNERS AND GAME SETTINGS */
-async function loadDashboard(){
+async function ensureAdmin(){
+ const {data:{user},error:userError} = await db.auth.getUser();
 
- const participantsBody =
- document.getElementById("participantsBody");
-
- const winnersBody =
- document.getElementById("winnersBody");
-
- participantsBody.replaceChildren();
- winnersBody.replaceChildren();
-
- document.getElementById("participantsMessage").textContent =
- "Loading...";
-
- document.getElementById("winnersMessage").textContent =
- "Loading...";
-
- const [participants,winners] = await Promise.all([
-  db.from("game_participants")
-   .select("*")
-   .order("created_at",{ascending:false})
-   .limit(100),
-
-  db.from("game_winners")
-   .select("*")
-   .order("created_at",{ascending:false})
-   .limit(100)
- ]);
-
- if(participants.error){
-  showError(
-   document.getElementById("participantsMessage"),
-   participants.error.message
-  );
- }else{
-  document.getElementById("participantCount").textContent =
-   participants.data.length;
-
-  participants.data.forEach(item=>{
-   const row=document.createElement("tr");
-   addCell(row,item.player_name);
-   addCell(row,item.answer);
-   addCell(row,item.is_correct ? "YES" : "NO");
-   addCell(row,formatDate(item.created_at));
-   participantsBody.appendChild(row);
-  });
-
-  document.getElementById("participantsMessage").textContent =
-   participants.data.length ? "" : "No participants yet.";
+ if(userError || !user){
+  throw new Error("Please sign in again.");
  }
 
- if(winners.error){
-  showError(
-   document.getElementById("winnersMessage"),
-   winners.error.message
-  );
- }else{
-  document.getElementById("winnerCount").textContent =
-   winners.data.length;
+ const {data,error} = await db.rpc("is_admin");
 
-  winners.data.forEach(item=>{
-   const row=document.createElement("tr");
-   addCell(row,item.player_name);
-   addCell(row,item.discount_code);
-   addCell(row,item.discount_percent+"%");
-   addCell(row,formatDate(item.created_at));
-   winnersBody.appendChild(row);
-  });
-
-  document.getElementById("winnersMessage").textContent =
-   winners.data.length ? "" : "No winners yet.";
+ if(error || data !== true){
+  throw new Error("Administrator permission required.");
  }
 
- await loadGameSettings();
+ return user;
 }
 
-/* LOAD CURRENT GAME SETTINGS */
-async function loadGameSettings(){
+/* OPTION EDITOR */
+function createOptionInputs(options = []){
+ const container = $("optionsContainer");
+ container.replaceChildren();
 
- const {data,error} = await db
-  .from("game_settings")
-  .select("image_url,correct_brand")
-  .eq("id",1)
-  .maybeSingle();
+ for(let i=0;i<6;i++){
+  const option = options[i] || {id:optionLetters[i],text:""};
 
- if(error){
-  showError(gameMessage,"Could not load game settings: "+error.message);
-  return;
+  const box = document.createElement("div");
+  box.className = "option-box";
+
+  const heading = document.createElement("div");
+  heading.className = "option-heading";
+  heading.textContent = "OPTION " + optionLetters[i];
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.maxLength = 200;
+  input.placeholder = "Write answer " + optionLetters[i];
+  input.value = option.text || "";
+  input.dataset.optionIndex = i;
+
+  box.append(heading,input);
+  container.appendChild(box);
  }
 
- if(!data){
-  currentGameImageUrl = "";
-  imagePreview.classList.add("hidden");
-  imageStatus.textContent = "No game has been published yet.";
-  return;
- }
-
- currentGameImageUrl = data.image_url || "";
-
- if(data.correct_brand){
-  correctBrand.value = data.correct_brand;
- }
-
- if(currentGameImageUrl){
-  imagePreview.src = currentGameImageUrl;
-  imagePreview.classList.remove("hidden");
-  imageStatus.textContent = "Current published game image.";
- }
-
- gameMessage.textContent = "";
+ updateCorrectOptions();
 }
 
-/* IMAGE PREVIEW */
-gameImage.addEventListener("change",()=>{
+function getOptions(){
+ const inputs = [
+  ...$("optionsContainer").querySelectorAll("input")
+ ];
 
- const file = gameImage.files[0];
+ const options = [];
 
- selectedImageFile = null;
+ inputs.forEach((input,index)=>{
+  const text = input.value.trim();
 
- if(previewObjectUrl){
-  URL.revokeObjectURL(previewObjectUrl);
-  previewObjectUrl = null;
+  if(text){
+   options.push({
+    id:optionLetters[index],
+    text
+   });
+  }
+ });
+
+ return options;
+}
+
+function updateCorrectOptions(selected = $("correctOption").value){
+ const options = getOptions();
+ const select = $("correctOption");
+ select.replaceChildren();
+
+ const placeholder = document.createElement("option");
+ placeholder.value = "";
+ placeholder.textContent = "Select the correct answer";
+ select.appendChild(placeholder);
+
+ options.forEach(option=>{
+  const item = document.createElement("option");
+  item.value = option.id;
+  item.textContent = option.id + " — " + option.text;
+  select.appendChild(item);
+ });
+
+ if(options.some(option=>option.id===selected)){
+  select.value = selected;
+ }else{
+  select.value = "";
  }
+}
 
- if(!file){
-  imageStatus.textContent =
-   currentGameImageUrl ? "Current published image." : "No image selected.";
-  return;
- }
-
- if(!file.type.startsWith("image/")){
-  showError(gameMessage,"Please select a valid image.");
-  gameImage.value = "";
-  return;
- }
-
- if(file.size > 5 * 1024 * 1024){
-  showError(gameMessage,"Image must be smaller than 5 MB.");
-  gameImage.value = "";
-  return;
- }
-
- selectedImageFile = file;
- previewObjectUrl = URL.createObjectURL(file);
-
- imagePreview.src = previewObjectUrl;
- imagePreview.classList.remove("hidden");
-
- imageStatus.textContent = "New image ready to publish.";
- gameMessage.textContent = "";
+$("optionsContainer").addEventListener("input",()=>{
+ updateCorrectOptions();
 });
 
-/* PUBLISH NEW GAME */
-publishButton.addEventListener("click",async()=>{
+/* NEW CHALLENGE */
+function resetEditor(){
+ selectedChallenge = null;
+ $("challengeId").value = "";
+ $("challengeSelector").value = "";
+ $("questionInput").value = "";
+ $("opensAt").value = "";
+ $("closesAt").value = "";
+ $("correctOption").value = "";
+ createOptionInputs();
+ $("editorMessage").textContent = "";
+}
 
- publishButton.disabled = true;
- publishButton.textContent = "PUBLISHING...";
- gameMessage.textContent = "";
+$("newChallengeButton").addEventListener("click",resetEditor);
+
+/* LOAD CHALLENGE INTO EDITOR */
+function editChallenge(id){
+ const challenge = challenges.find(item=>item.id===id);
+ if(!challenge) return;
+
+ selectedChallenge = challenge;
+
+ $("challengeId").value = challenge.id;
+ $("challengeSelector").value = challenge.id;
+ $("questionInput").value = challenge.question || "";
+ $("opensAt").value = localDateValue(challenge.opens_at);
+ $("closesAt").value = localDateValue(challenge.closes_at);
+
+ const options = Array.isArray(challenge.options)
+  ? challenge.options : [];
+
+ createOptionInputs(options);
+ updateCorrectOptions(challenge.correct_option_id);
+
+ showSuccess(
+  $("editorMessage"),
+  "Challenge loaded. You can edit it now."
+ );
+}
+
+$("challengeSelector").addEventListener("change",event=>{
+ if(event.target.value){
+  editChallenge(event.target.value);
+ }else{
+  resetEditor();
+ }
+});
+
+/* LOAD DASHBOARD */
+async function loadDashboard(){
+ await Promise.all([
+  loadChallenges(),
+  loadParticipants(),
+  loadWinners()
+ ]);
+}
+
+/* LOAD CHALLENGES */
+async function loadChallenges(){
+ const body = $("challengesBody");
+ body.replaceChildren();
+
+ $("challengesMessage").textContent = "Loading...";
+
+ const {data,error} = await db
+  .from("weekly_challenges")
+  .select("*")
+  .order("created_at",{ascending:false})
+  .limit(100);
+
+ if(error){
+  showError($("challengesMessage"),error.message);
+  return;
+ }
+
+ challenges = data || [];
+
+ const selector = $("challengeSelector");
+ const previous = $("challengeId").value;
+
+ selector.replaceChildren();
+
+ const first = document.createElement("option");
+ first.value = "";
+ first.textContent = "CREATE A NEW CHALLENGE";
+ selector.appendChild(first);
+
+ challenges.forEach(challenge=>{
+  const option = document.createElement("option");
+  option.value = challenge.id;
+  option.textContent =
+   (challenge.question || "Untitled").slice(0,70) +
+   " [" + challenge.status.toUpperCase() + "]";
+  selector.appendChild(option);
+
+  const row = document.createElement("tr");
+
+  addCell(row,challenge.question);
+  addCell(row,challenge.status.toUpperCase());
+  addCell(row,"—");
+  addCell(row,formatDate(challenge.created_at));
+
+  const actionCell = document.createElement("td");
+  const editButton = document.createElement("button");
+  editButton.textContent = "EDIT";
+  editButton.addEventListener("click",()=>{
+   editChallenge(challenge.id);
+   window.scrollTo({top:0,behavior:"smooth"});
+  });
+  actionCell.appendChild(editButton);
+  row.appendChild(actionCell);
+
+  body.appendChild(row);
+ });
+
+ if(previous && challenges.some(item=>item.id===previous)){
+  selector.value = previous;
+ }
+
+ $("challengesMessage").textContent =
+  challenges.length ? "" : "No challenges created yet.";
+}
+
+/* LOAD PARTICIPANTS */
+async function loadParticipants(){
+ const body = $("participantsBody");
+ body.replaceChildren();
+
+ $("participantsMessage").textContent = "Loading...";
+
+ const {data,error} = await db
+  .from("weekly_challenge_participants")
+  .select("*")
+  .order("created_at",{ascending:false})
+  .limit(100);
+
+ if(error){
+  showError($("participantsMessage"),error.message);
+  return;
+ }
+
+ const items = data || [];
+ $("participantCount").textContent = items.length;
+
+ items.forEach(item=>{
+  const row = document.createElement("tr");
+
+  addCell(row,item.player_name);
+  addCell(row,item.selected_option_id);
+  addCell(row,item.is_correct ? "YES" : "NO");
+  addCell(row,item.is_winner ? "YES" : "NO");
+  addCell(row,formatDate(item.created_at));
+
+  body.appendChild(row);
+ });
+
+ $("participantsMessage").textContent =
+  items.length ? "" : "No participants yet.";
+}
+
+/* LOAD WINNERS */
+async function loadWinners(){
+ const body = $("winnersBody");
+ body.replaceChildren();
+
+ $("winnersMessage").textContent = "Loading...";
+
+ const {data,error} = await db
+  .from("weekly_challenge_winners")
+  .select("*")
+  .order("created_at",{ascending:false})
+  .limit(100);
+
+ if(error){
+  showError($("winnersMessage"),error.message);
+  return;
+ }
+
+ const items = data || [];
+ $("winnerCount").textContent = items.length;
+
+ items.forEach(item=>{
+  const row = document.createElement("tr");
+
+  addCell(row,item.player_name);
+  addCell(row,item.discount_code);
+  addCell(row,item.discount_percent+"%");
+  addCell(row,formatDate(item.created_at));
+
+  body.appendChild(row);
+ });
+
+ $("winnersMessage").textContent =
+  items.length ? "" : "No winners yet.";
+}
+
+/* VALIDATE FORM */
+function collectForm(){
+ const question = $("questionInput").value.trim();
+ const options = getOptions();
+ const correct = $("correctOption").value;
+
+ if(!question){
+  throw new Error("Please enter a question.");
+ }
+
+ if(options.length < 2){
+  throw new Error("Please enter at least 2 answer options.");
+ }
+
+ if(options.length > 6){
+  throw new Error("Maximum 6 options allowed.");
+ }
+
+ if(!correct || !options.some(item=>item.id===correct)){
+  throw new Error("Please select the correct answer.");
+ }
+
+ let opensAt = null;
+ let closesAt = null;
+
+ if($("opensAt").value){
+  opensAt = new Date($("opensAt").value).toISOString();
+ }
+
+ if($("closesAt").value){
+  closesAt = new Date($("closesAt").value).toISOString();
+ }
+
+ if(opensAt && closesAt && new Date(closesAt)<=new Date(opensAt)){
+  throw new Error("Closing date must be after opening date.");
+ }
+
+ return {
+  question,
+  options,
+  correct_option_id:correct,
+  opens_at:opensAt,
+  closes_at:closesAt,
+  max_winners:6,
+  discount_percent:15
+ };
+}
+
+/* SAVE CHALLENGE AS DRAFT */
+async function saveDraft(){
+ await ensureAdmin();
+
+ const values = collectForm();
+ const id = $("challengeId").value;
+
+ values.status = "draft";
+ values.updated_at = new Date().toISOString();
+
+ if(id){
+  const {error} = await db
+   .from("weekly_challenges")
+   .update(values)
+   .eq("id",id);
+
+  if(error) throw error;
+
+  return id;
+ }
+
+ const {data,error} = await db
+  .from("weekly_challenges")
+  .insert({
+   ...values,
+   updated_by:(await db.auth.getUser()).data.user.id
+  })
+  .select("id")
+  .single();
+
+ if(error) throw error;
+
+ $("challengeId").value = data.id;
+ return data.id;
+}
+
+async function runEditorAction(action){
+ if(busy) return;
+
+ busy = true;
+
+ const buttons = [
+  $("saveDraftButton"),
+  $("publishButton"),
+  $("closeButton")
+ ];
+
+ buttons.forEach(button=>button.disabled=true);
+ $("editorMessage").textContent = "Please wait...";
 
  try{
+  const id = await saveDraft();
 
-  // Confirm the current user.
-  const {data:{user},error:userError} =
-   await db.auth.getUser();
+  if(action==="publish"){
+   await ensureAdmin();
 
-  if(userError || !user){
-   throw new Error("Please sign in again.");
+   // Close all other published challenges first.
+   const {error:closeError} = await db
+    .from("weekly_challenges")
+    .update({
+     status:"closed",
+     updated_at:new Date().toISOString()
+    })
+    .eq("status","published")
+    .neq("id",id);
+
+   if(closeError) throw closeError;
+
+   const {error:publishError} = await db
+    .from("weekly_challenges")
+    .update({
+     status:"published",
+     updated_at:new Date().toISOString()
+    })
+    .eq("id",id);
+
+   if(publishError) throw publishError;
+
+   showSuccess($("editorMessage"),
+    "Challenge published successfully!");
+
+  }else if(action==="close"){
+   const {error} = await db
+    .from("weekly_challenges")
+    .update({
+     status:"closed",
+     updated_at:new Date().toISOString()
+    })
+    .eq("id",id);
+
+   if(error) throw error;
+
+   showSuccess($("editorMessage"),
+    "Challenge closed successfully.");
+
+  }else{
+   showSuccess($("editorMessage"),
+    "Challenge saved as draft successfully.");
   }
 
-  // Verify administrator permission.
-  const {data:adminAllowed,error:adminError} =
-   await db.rpc("is_admin");
+  await loadChallenges();
 
-  if(adminError || adminAllowed !== true){
-   throw new Error("Administrator permission required.");
+  const updated = challenges.find(item=>item.id===id);
+  if(updated){
+   editChallenge(id);
+   $("challengeSelector").value=id;
   }
-
-  let imageUrl = currentGameImageUrl;
-
-  // Upload a new image if selected.
-  if(selectedImageFile){
-
-   const extension =
-    selectedImageFile.name.split(".").pop().toLowerCase();
-
-   const filePath =
-    "games/" + Date.now() + "-" +
-    Math.random().toString(36).slice(2) + "." + extension;
-
-   const {error:uploadError} = await db.storage
-    .from("game-images")
-    .upload(filePath,selectedImageFile,{
-     cacheControl:"3600",
-     upsert:false,
-     contentType:selectedImageFile.type
-    });
-
-   if(uploadError){
-    throw new Error("Image upload failed: "+uploadError.message);
-   }
-
-   const {data:publicData} = db.storage
-    .from("game-images")
-    .getPublicUrl(filePath);
-
-   imageUrl = publicData.publicUrl;
-  }
-
-  if(!imageUrl){
-   throw new Error("Please upload a T-shirt image first.");
-  }
-
-  // Save game settings.
-  const {error:saveError} = await db
-   .from("game_settings")
-   .upsert({
-    id:1,
-    image_url:imageUrl,
-    correct_brand:correctBrand.value,
-    updated_at:new Date().toISOString(),
-    updated_by:user.id
-   },{
-    onConflict:"id"
-   });
-
-  if(saveError){
-   throw new Error("Could not save game settings: "+saveError.message);
-  }
-
-  currentGameImageUrl = imageUrl;
-  selectedImageFile = null;
-  gameImage.value = "";
-
-  if(previewObjectUrl){
-   URL.revokeObjectURL(previewObjectUrl);
-   previewObjectUrl = null;
-  }
-
-  imagePreview.src = imageUrl;
-  imagePreview.classList.remove("hidden");
-  imageStatus.textContent = "Published game image.";
-
-  showSuccess(
-   gameMessage,
-   "Game published successfully! Correct brand: "+correctBrand.value
-  );
 
  }catch(error){
-
-  showError(
-   gameMessage,
-   error.message || "An unexpected error occurred."
-  );
-
+  showError($("editorMessage"),
+   error.message || "An unexpected error occurred.");
  }finally{
-
-  publishButton.disabled = false;
-  publishButton.textContent = "PUBLISH NEW GAME";
+  busy = false;
+  buttons.forEach(button=>button.disabled=false);
  }
+}
+
+$("saveDraftButton").addEventListener("click",()=>{
+ runEditorAction("draft");
+});
+
+$("publishButton").addEventListener("click",()=>{
+ runEditorAction("publish");
+});
+
+$("closeButton").addEventListener("click",()=>{
+ if(!$("challengeId").value){
+  showError($("editorMessage"),"Select or save a challenge first.");
+  return;
+ }
+
+ if(!confirm("Are you sure you want to close this challenge?")){
+  return;
+ }
+
+ runEditorAction("close");
 });
 
 /* LOGIN */
-document.getElementById("loginForm")
-.addEventListener("submit",async event=>{
-
+$("loginForm").addEventListener("submit",async event=>{
  event.preventDefault();
 
- const button=document.getElementById("loginButton");
- button.disabled=true;
- button.textContent="CHECKING...";
-
- loginMessage.textContent="";
+ const button = $("loginButton");
+ button.disabled = true;
+ button.textContent = "CHECKING...";
+ loginMessage.textContent = "";
 
  try{
+  const email = $("email").value.trim();
+  const password = $("password").value;
 
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-
-  const {error}=await db.auth.signInWithPassword({
+  const {error} = await db.auth.signInWithPassword({
    email,password
   });
 
   if(error) throw error;
 
-  const allowed=await verifyAdmin();
+  const allowed = await checkAdmin();
 
   if(!allowed){
-   throw new Error("This account is not authorized as an administrator.");
+   throw new Error("This account is not authorized.");
   }
 
  }catch(error){
-
   showError(loginMessage,error.message);
-
  }finally{
-
-  button.disabled=false;
-  button.textContent="SIGN IN";
+  button.disabled = false;
+  button.textContent = "SIGN IN";
  }
 });
 
 /* REFRESH */
-document.getElementById("refreshButton")
-.addEventListener("click",loadDashboard);
+$("refreshButton").addEventListener("click",loadDashboard);
 
 /* LOGOUT */
-document.getElementById("logoutButton")
-.addEventListener("click",async()=>{
-
+$("logoutButton").addEventListener("click",async()=>{
  await db.auth.signOut();
 
  dashboard.classList.add("hidden");
  loginPanel.classList.remove("hidden");
 
- document.getElementById("password").value="";
+ $("password").value="";
  loginMessage.textContent="You have signed out.";
+ resetEditor();
 });
 
 /* INITIAL CHECK */
-verifyAdmin();
+createOptionInputs();
+checkAdmin();
 
 </script>
 </body>
