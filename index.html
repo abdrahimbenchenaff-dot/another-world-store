@@ -1659,14 +1659,17 @@ submitGame.addEventListener("click",async function(){
 
    },
 
-   body:JSON.stringify({
+   
+body:JSON.stringify({
 
-    name:name,
+ name: name,
 
-    option_id:selectedAnswer
+ challenge_id: activeChallenge.id,
 
-   })
+ option_id: selectedAnswer
 
+})
+   
   });
 
   const data = await response.json();
