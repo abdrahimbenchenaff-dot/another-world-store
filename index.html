@@ -459,16 +459,15 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
 </section>
 
 
-<!-- WEEKLY STREET MARKET CHALLENGE -->
+
+<!-- WEEKLY CHALLENGE -->
 <section class="game-section" id="game">
  <div class="section">
   <div class="game-box">
 
    <p class="eyebrow">ANOTHER WORLD EXCLUSIVE</p>
 
-   <h2 class="game-title">
-    WEEKLY CHALLENGE
-   </h2>
+   <h2 class="game-title">WEEKLY CHALLENGE</h2>
 
    <h3 class="game-discount"
        data-en="WIN 15% DISCOUNT"
@@ -476,18 +475,11 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
     WIN 15% DISCOUNT
    </h3>
 
-   <h2 id="weeklyQuestion"
-       class="game-title"
-       data-en="WHAT DID I FIND AT THE STREET MARKET LAST WEEK?"
-       data-ar="ماذا وجدت في سوق الشارع الأسبوع الماضي؟">
-    WHAT DID I FIND AT THE STREET MARKET LAST WEEK?
+   <h2 id="weeklyQuestion" class="game-title">
+    LOADING CHALLENGE...
    </h2>
 
-   <p class="game-description"
-      data-en="Enter your name and choose your answer."
-      data-ar="أدخل اسمك واختر إجابتك.">
-    Enter your name and choose your answer.
-   </p>
+   <p id="challengeStatus" class="game-description"></p>
 
    <input
     type="text"
@@ -498,45 +490,46 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
     autocomplete="name"
     aria-label="Your name">
 
-   <div id="weeklyOptions" class="brand-options">
-    <p class="game-description"
-       data-en="WEEKLY OPTIONS WILL BE PUBLISHED HERE."
-       data-ar="ستظهر خيارات التحدي الأسبوعي هنا.">
-     WEEKLY OPTIONS WILL BE PUBLISHED HERE.
-    </p>
-   </div>
+   <div id="weeklyOptions" class="brand-options"></div>
 
    <button id="submitGame"
            class="game-submit"
            type="button"
-           disabled
-           data-en="SUBMIT ANSWER"
-           data-ar="إرسال الإجابة">
+           disabled>
     SUBMIT ANSWER
    </button>
 
-   <p id="gameMessage"
-      class="game-message"
-      aria-live="polite"
-      data-en="THE NEXT CHALLENGE WILL BE ANNOUNCED SOON."
-      data-ar="سيتم الإعلان عن التحدي القادم قريباً.">
-    THE NEXT CHALLENGE WILL BE ANNOUNCED SOON.
+   <p id="gameMessage" class="game-message" aria-live="polite">
+    LOADING WEEKLY CHALLENGE...
    </p>
 
    <div class="game-description">
-    <p data-en="OPEN: SATURDAY"
-       data-ar="الافتتاح: السبت">OPEN: SATURDAY</p>
+    <p id="challengeWinners">MAXIMUM 6 WINNERS</p>
+    <p id="challengeDiscount">15% DISCOUNT</p>
+   </div>
 
-    <p data-en="CLOSE: THURSDAY"
-       data-ar="الإغلاق: الخميس">CLOSE: THURSDAY</p>
+   <div id="winnerCard" class="winner-card">
+    <h3 data-en="CONGRATULATIONS!"
+        data-ar="تهانينا!">
+     CONGRATULATIONS!
+    </h3>
 
-    <p data-en="MAXIMUM 6 WINNERS"
-       data-ar="الحد الأقصى 6 فائزين">MAXIMUM 6 WINNERS</p>
+    <p data-en="YOU WON A 15% DISCOUNT"
+       data-ar="لقد ربحت خصماً بنسبة 15%">
+     YOU WON A 15% DISCOUNT
+    </p>
+
+    <span id="winnerCode" class="winner-code"></span>
+
+    <button id="copyWinnerCode" class="copy-code" type="button">
+     COPY DISCOUNT CODE
+    </button>
    </div>
 
   </div>
  </div>
 </section>
+ 
  
 <!-- COLLECTION -->
 <section class="products" id="products">
@@ -1113,7 +1106,291 @@ submitGame.addEventListener("click",async function(){
  gameMessage.textContent =
   currentLanguage === "en" ? "Checking your answer..." : "جارٍ التحقق من إجابتك...";
 
+
+/* WEEKLY CHALLENGE - SUPABASE */
+
+const SUPABASE_URL =
+ "https://nukiuulwmlbbfyzyntly.supabase.co";
+
+const SUPABASE_ANON_KEY =
+ "sb_publishable_L6U6tQFbHLbdyqOPHa745g_iYEDK-tz";
+
+const GAME_FUNCTION =
+ SUPABASE_URL + "/functions/v1/submit-weekly-challenge-attempt";
+
+const gameName = document.getElementById("gameName");
+const submitGame = document.getElementById("submitGame");
+const gameMessage = document.getElementById("gameMessage");
+const winnerCard = document.getElementById("winnerCard");
+const winnerCode = document.getElementById("winnerCode");
+const copyWinnerCode = document.getElementById("copyWinnerCode");
+
+let activeChallenge = null;
+let selectedAnswer = "";
+let gameWinner = null;
+let gameBusy = false;
+
+/* GAME MESSAGES */
+
+function setGameMessage(message,type="normal"){
+ gameMessage.textContent = message;
+ gameMessage.style.color =
+  type === "error" ? "#d98a78" :
+  type === "success" ? "#65c78b" :
+  "var(--muted)";
+}
+
+/* LOAD ACTIVE CHALLENGE */
+
+async function loadWeeklyChallenge(){
+
+ submitGame.disabled = true;
+ setGameMessage(
+  currentLanguage === "en"
+   ? "LOADING WEEKLY CHALLENGE..."
+   : "جارٍ تحميل التحدي الأسبوعي..."
+ );
+
  try{
+
+  const response = await fetch(
+   SUPABASE_URL + "/rest/v1/rpc/get_active_weekly_challenge",
+   {
+    method:"POST",
+    headers:{
+     "apikey":SUPABASE_ANON_KEY,
+     "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+     "Content-Type":"application/json"
+    },
+    body:"{}",
+    cache:"no-store"
+   }
+  );
+
+  if(!response.ok){
+   throw new Error("Could not load the weekly challenge.");
+  }
+
+  const challenge = await response.json();
+
+  if(!challenge || !challenge.id){
+   activeChallenge = null;
+
+   document.getElementById("weeklyQuestion").textContent =
+    currentLanguage === "en"
+     ? "NO ACTIVE CHALLENGE"
+     : "لا يوجد تحدٍ نشط حالياً";
+
+   document.getElementById("weeklyOptions").replaceChildren();
+
+   setGameMessage(
+    currentLanguage === "en"
+     ? "THE NEXT CHALLENGE WILL BE ANNOUNCED SOON."
+     : "سيتم الإعلان عن التحدي القادم قريباً."
+   );
+
+   return;
+  }
+
+  activeChallenge = challenge;
+  selectedAnswer = "";
+  gameWinner = null;
+
+  winnerCard.classList.remove("active");
+  gameName.disabled = false;
+  gameName.value = "";
+
+  document.getElementById("weeklyQuestion").textContent =
+   challenge.question;
+
+  const winnersCount = Number(challenge.winners_count || 0);
+  const maxWinners = Number(challenge.max_winners || 6);
+
+  document.getElementById("challengeWinners").textContent =
+   currentLanguage === "en"
+    ? "WINNERS: " + winnersCount + " / " + maxWinners
+    : "الفائزون: " + winnersCount + " / " + maxWinners;
+
+  document.getElementById("challengeDiscount").textContent =
+   currentLanguage === "en"
+    ? "DISCOUNT: " + challenge.discount_percent + "%"
+    : "الخصم: " + challenge.discount_percent + "%";
+
+  const optionsContainer = document.getElementById("weeklyOptions");
+  optionsContainer.replaceChildren();
+
+  const options = Array.isArray(challenge.options)
+   ? challenge.options : [];
+
+  options.forEach(option=>{
+
+   const button = document.createElement("button");
+
+   button.type = "button";
+   button.className = "brand-option";
+   button.textContent = option.text;
+   button.dataset.optionId = option.id;
+
+   button.addEventListener("click",()=>{
+
+    if(gameBusy || gameWinner) return;
+
+    optionsContainer.querySelectorAll("button").forEach(item=>{
+     item.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+    selectedAnswer = option.id;
+
+    setGameMessage("");
+    submitGame.disabled = false;
+   });
+
+   optionsContainer.appendChild(button);
+  });
+
+  if(options.length < 2){
+   throw new Error("The challenge does not have enough answer options.");
+  }
+
+  const now = Date.now();
+  const opens = challenge.opens_at
+   ? new Date(challenge.opens_at).getTime() : null;
+  const closes = challenge.closes_at
+   ? new Date(challenge.closes_at).getTime() : null;
+
+  if(opens && now < opens){
+   document.getElementById("challengeStatus").textContent =
+    currentLanguage === "en"
+     ? "CHALLENGE OPENS: " + new Date(opens).toLocaleString()
+     : "موعد بداية التحدي: " + new Date(opens).toLocaleString();
+
+   setGameMessage(
+    currentLanguage === "en"
+     ? "THIS CHALLENGE HAS NOT OPENED YET."
+     : "لم يبدأ التحدي بعد."
+   );
+
+   return;
+  }
+
+  if(closes && now >= closes){
+   document.getElementById("challengeStatus").textContent =
+    currentLanguage === "en"
+     ? "CHALLENGE CLOSED"
+     : "التحدي مغلق";
+
+   setGameMessage(
+    currentLanguage === "en"
+     ? "THIS CHALLENGE IS CLOSED."
+     : "انتهى هذا التحدي."
+   );
+
+   return;
+  }
+
+  document.getElementById("challengeStatus").textContent =
+   currentLanguage === "en"
+    ? "CHOOSE YOUR ANSWER AND WIN!"
+    : "اختر إجابتك واربح!";
+
+  setGameMessage(
+   currentLanguage === "en"
+    ? "ENTER YOUR NAME AND CHOOSE AN ANSWER."
+    : "أدخل اسمك واختر إجابتك."
+  );
+
+  submitGame.disabled = false;
+
+ }catch(error){
+
+  console.error("Weekly challenge error:",error);
+
+  activeChallenge = null;
+
+  setGameMessage(
+   currentLanguage === "en"
+    ? "UNABLE TO LOAD THE CHALLENGE. PLEASE TRY AGAIN LATER."
+    : "تعذر تحميل التحدي. حاول لاحقاً.",
+   "error"
+  );
+ }
+}
+
+/* DISPLAY WINNER */
+
+function showWinner(data,scrollToWinner=false){
+
+ gameWinner = data;
+
+ winnerCode.textContent = data.discount_code;
+
+ winnerCard.classList.add("active");
+ submitGame.disabled = true;
+
+ document.querySelectorAll("#weeklyOptions button").forEach(button=>{
+  button.disabled = true;
+ });
+
+ gameName.disabled = true;
+
+ setGameMessage(
+  currentLanguage === "en"
+   ? "CONGRATULATIONS! YOU WON A 15% DISCOUNT!"
+   : "تهانينا! لقد ربحت خصماً بنسبة 15%!",
+  "success"
+ );
+
+ if(scrollToWinner){
+  winnerCard.scrollIntoView({
+   behavior:"smooth",
+   block:"center"
+  });
+ }
+}
+
+/* SUBMIT ANSWER */
+
+submitGame.addEventListener("click",async()=>{
+
+ if(gameBusy || gameWinner || !activeChallenge) return;
+
+ const name = gameName.value.trim();
+
+ if(!name){
+  setGameMessage(
+   currentLanguage === "en"
+    ? "PLEASE ENTER YOUR NAME."
+    : "يرجى إدخال اسمك.",
+   "error"
+  );
+  gameName.focus();
+  return;
+ }
+
+ if(!selectedAnswer){
+  setGameMessage(
+   currentLanguage === "en"
+    ? "PLEASE SELECT AN ANSWER."
+    : "يرجى اختيار إجابة.",
+   "error"
+  );
+  return;
+ }
+
+ gameBusy = true;
+ submitGame.disabled = true;
+ submitGame.textContent =
+  currentLanguage === "en" ? "CHECKING..." : "جارٍ التحقق...";
+
+ setGameMessage(
+  currentLanguage === "en"
+   ? "CHECKING YOUR ANSWER..."
+   : "جارٍ التحقق من إجابتك..."
+ );
+
+ try{
+
   const response = await fetch(GAME_FUNCTION,{
    method:"POST",
    headers:{
@@ -1123,7 +1400,7 @@ submitGame.addEventListener("click",async function(){
    },
    body:JSON.stringify({
     name:name,
-    answer:selectedAnswer
+    option_id:selectedAnswer
    })
   });
 
@@ -1133,68 +1410,109 @@ submitGame.addEventListener("click",async function(){
    throw new Error(data.message || "Unable to submit your answer.");
   }
 
-  if(data.is_correct === true){
-   if(!data.discount_code || Number(data.discount_percent) !== 15){
-    throw new Error("Discount information is incomplete.");
+  if(data.is_winner === true){
+
+   if(
+    !data.discount_code ||
+    Number(data.discount_percent) !== 15
+   ){
+    throw new Error("Invalid discount information.");
    }
 
-   gameWinner = {
+   showWinner({
     name:name,
     discount_code:data.discount_code,
     discount_percent:15
-   };
+   },true);
 
-   localStorage.setItem("aw-game-winner",JSON.stringify(gameWinner));
-   showWinner(gameWinner,true);
+  }else if(data.is_correct === true){
 
-  }else{
-   gameMessage.style.color = "#d98a78";
-   gameMessage.textContent =
-    currentLanguage === "en"
-     ? (data.message || "Wrong answer. Try again!")
-     : "إجابة خاطئة! حاول مرة أخرى.";
+   selectedAnswer = "";
 
-   document.querySelectorAll(".brand-option").forEach(button => {
+   document.querySelectorAll("#weeklyOptions button").forEach(button=>{
     button.classList.remove("selected");
    });
 
+   setGameMessage(
+    currentLanguage === "en"
+     ? "CORRECT ANSWER! BUT ALL 6 WINNER PLACES ARE FILLED."
+     : "إجابة صحيحة! لكن اكتمل عدد الفائزين الستة.",
+    "success"
+   );
+
+   submitGame.disabled = false;
+
+  }else{
+
    selectedAnswer = "";
+
+   document.querySelectorAll("#weeklyOptions button").forEach(button=>{
+    button.classList.remove("selected");
+   });
+
+   setGameMessage(
+    currentLanguage === "en"
+     ? "WRONG ANSWER. TRY AGAIN!"
+     : "إجابة خاطئة! حاول مرة أخرى.",
+    "error"
+   );
+
+   submitGame.disabled = false;
+  }
+
+  if(data.winners_count != null){
+   document.getElementById("challengeWinners").textContent =
+    currentLanguage === "en"
+     ? "WINNERS: " + data.winners_count + " / 6"
+     : "الفائزون: " + data.winners_count + " / 6";
   }
 
  }catch(error){
-  console.error("Game error:",error);
-  gameMessage.style.color = "#d98a78";
-  gameMessage.textContent = error.message ||
+
+  console.error("Submission error:",error);
+
+  setGameMessage(
+   error.message ||
    (currentLanguage === "en"
-    ? "Connection error. Please try again."
-    : "حدث خطأ في الاتصال. حاول مرة أخرى.");
+    ? "CONNECTION ERROR. PLEASE TRY AGAIN."
+    : "حدث خطأ في الاتصال. حاول مرة أخرى."),
+   "error"
+  );
+
+  submitGame.disabled = false;
 
  }finally{
+
   gameBusy = false;
 
-  if(!gameWinner){
-   submitGame.disabled = false;
-   submitGame.textContent =
-    currentLanguage === "en" ? "SUBMIT ANSWER" : "إرسال الإجابة";
-  }
+  submitGame.textContent =
+   currentLanguage === "en"
+    ? "SUBMIT ANSWER"
+    : "إرسال الإجابة";
  }
 });
 
 /* COPY DISCOUNT CODE */
 
 async function copyDiscountCode(button){
+
  if(!gameWinner || !gameWinner.discount_code) return;
 
- const code = gameWinner.discount_code;
-
  try{
+
   if(navigator.clipboard && window.isSecureContext){
-   await navigator.clipboard.writeText(code);
+
+   await navigator.clipboard.writeText(
+    gameWinner.discount_code
+   );
+
   }else{
+
    const temp = document.createElement("textarea");
-   temp.value = code;
+   temp.value = gameWinner.discount_code;
    temp.style.position = "fixed";
    temp.style.opacity = "0";
+
    document.body.appendChild(temp);
    temp.select();
 
@@ -1204,43 +1522,23 @@ async function copyDiscountCode(button){
    if(!copied) throw new Error("Copy failed");
   }
 
-  button.textContent = currentLanguage === "en" ? "COPIED!" : "تم النسخ!";
+  button.textContent =
+   currentLanguage === "en" ? "COPIED!" : "تم النسخ!";
 
  }catch(error){
-  button.textContent = code;
+
+  button.textContent = gameWinner.discount_code;
  }
 }
 
-if(copyWinnerCode){
-  copyWinnerCode.addEventListener("click",function(){
-    copyDiscountCode(copyWinnerCode);
-  });
-}
-if(collectionCopyCode){
-  collectionCopyCode.addEventListener("click",function(){
-    copyDiscountCode(collectionCopyCode);
-  });
-}
-/* RESTORE SAVED WINNER */
+copyWinnerCode.addEventListener("click",()=>{
+ copyDiscountCode(copyWinnerCode);
+});
 
-try{
- const savedWinner = JSON.parse(
-  localStorage.getItem("aw-game-winner") || "null"
- );
+/* INITIALIZE WEEKLY GAME */
 
- if(
-  savedWinner &&
-  typeof savedWinner.discount_code === "string" &&
-  savedWinner.discount_code.length > 0 &&
-  Number(savedWinner.discount_percent) === 15
- ){
-  showWinner(savedWinner,false);
- }
-
-}catch(error){
- localStorage.removeItem("aw-game-winner");
-}
-
+loadWeeklyChallenge();
+     
 
 /* LANGUAGE AND THEME BUTTONS */
 
