@@ -840,42 +840,56 @@ function loadGallery(product){
 /* LANGUAGE */
 
 function updateLanguage(){
- document.documentElement.lang = currentLanguage;
- document.body.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+  document.documentElement.lang = currentLanguage;
+  document.body.dir = currentLanguage === "ar" ? "rtl" : "ltr";
 
- document.querySelectorAll("[data-en][data-ar]").forEach(function(element){
-  element.innerHTML = element.dataset[currentLanguage];
- });
+  document.querySelectorAll("[data-en][data-ar]").forEach(function(element){
+    element.innerHTML = element.dataset[currentLanguage];
+  });
 
- languageBtn.textContent =
-  currentLanguage === "en" ? "AR العربية" : "EN English";
+  if(languageBtn){
+    languageBtn.textContent =
+      currentLanguage === "en" ? "AR العربية" : "EN English";
+  }
 
- document.getElementById("gameName").placeholder =
-  currentLanguage === "en" ? "YOUR NAME" : "أدخل اسمك";
+  if(gameName){
+    gameName.placeholder =
+      currentLanguage === "en" ? "YOUR NAME" : "أدخل اسمك";
+  }
 
- updateThemeButton();
+  updateThemeButton();
 
- if(productModal.classList.contains("active")){
-  loadGallery(currentProduct);
- }
+  if(productModal && productModal.classList.contains("active")){
+    loadGallery(currentProduct);
+  }
 
- if(gameWinner){
-  showWinner(gameWinner,false);
- }
+  if(gameWinner){
+    showWinner(gameWinner,false);
+  }
 }
 
 function updateThemeButton(){
- themeBtn.textContent = isLight
-  ? (currentLanguage === "en" ? "🌙 DARK MODE" : "🌙 الوضع الداكن")
-  : (currentLanguage === "en" ? "☀️ LIGHT MODE" : "☀️ الوضع الفاتح");
+  if(!themeBtn) return;
+
+  themeBtn.textContent = isLight
+    ? (currentLanguage === "en" ? "🌙 DARK MODE" : "🌙 الوضع الداكن")
+    : (currentLanguage === "en" ? "☀️ LIGHT MODE" : "☀️ الوضع الفاتح");
 }
 
 function updateTheme(){
- document.body.classList.toggle("light-mode",isLight);
- document.querySelector('meta[name="theme-color"]')
-  .setAttribute("content",isLight ? "#f3ede2" : "#11100e");
- localStorage.setItem("aw-theme",isLight ? "light" : "dark");
- updateThemeButton();
+  document.body.classList.toggle("light-mode",isLight);
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+  if(themeMeta){
+    themeMeta.setAttribute(
+      "content",
+      isLight ? "#f3ede2" : "#11100e"
+    );
+  }
+
+  localStorage.setItem("aw-theme",isLight ? "light" : "dark");
+  updateThemeButton();
 }
 
 /* PRODUCT DETAILS */
@@ -1197,14 +1211,16 @@ async function copyDiscountCode(button){
  }
 }
 
-copyWinnerCode.addEventListener("click",function(){
- copyDiscountCode(copyWinnerCode);
-});
-
-collectionCopyCode.addEventListener("click",function(){
- copyDiscountCode(collectionCopyCode);
-});
-
+if(copyWinnerCode){
+  copyWinnerCode.addEventListener("click",function(){
+    copyDiscountCode(copyWinnerCode);
+  });
+}
+if(collectionCopyCode){
+  collectionCopyCode.addEventListener("click",function(){
+    copyDiscountCode(collectionCopyCode);
+  });
+}
 /* RESTORE SAVED WINNER */
 
 try{
@@ -1226,31 +1242,23 @@ try{
 }
 
 
-/* LANGUAGE AND THEME BUTTONS - FIXED */
+/* LANGUAGE AND THEME BUTTONS */
 
-if (languageBtn) {
-  languageBtn.onclick = function () {
-    currentLanguage = currentLanguage === "en" ? "ar" : "en";
+languageBtn.onclick = function(){
+  currentLanguage = currentLanguage === "en" ? "ar" : "en";
+  localStorage.setItem("aw-language",currentLanguage);
+  updateLanguage();
+};
 
-    localStorage.setItem("aw-language", currentLanguage);
-
-    updateLanguage();
-  };
-}
-
-if (themeBtn) {
-  themeBtn.onclick = function () {
-    isLight = !isLight;
-    updateTheme();
-  };
-}
+themeBtn.onclick = function(){
+  isLight = !isLight;
+  updateTheme();
+};
 
 /* INITIALIZE */
 
-updateLanguage();
 updateTheme();
-loadGameSettings();
- 
+updateLanguage();
 
 </script>
 
