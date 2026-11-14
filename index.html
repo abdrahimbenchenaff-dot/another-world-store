@@ -728,6 +728,12 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
 
 <script>
 
+/* ==========================================
+   ANOTHER WORLD - COMPLETE JAVASCRIPT
+   Language + Theme + Product Gallery
+   Weekly Challenge + Supabase
+========================================== */
+
 /* GENERAL ELEMENTS */
 
 const languageBtn = document.getElementById("languageBtn");
@@ -743,371 +749,24 @@ const viewerClose = document.getElementById("viewerClose");
 const galleryMain = document.getElementById("galleryMain");
 const galleryThumbnails = document.getElementById("galleryThumbnails");
 
-let currentLanguage = localStorage.getItem("aw-language") || "en";
-let isLight = localStorage.getItem("aw-theme") === "light";
-let currentProduct = 1;
-
-/* PRODUCT GALLERY */
-
-const photoNames = [
- {key:"front",en:"FRONT VIEW",ar:"الصورة الأمامية"},
- {key:"back",en:"BACK VIEW",ar:"الصورة الخلفية"},
- {key:"side",en:"SIDE VIEW",ar:"الصورة الجانبية"},
- {key:"detail",en:"DETAIL VIEW",ar:"صورة التفاصيل"}
-];
-
-function photoPath(product,key){
- return "products/product-"+product+"-"+key+".jpg";
-}
-
-function makePlaceholder(label){
- const box = document.createElement("div");
- box.className = "photo-placeholder";
-
- const plus = document.createElement("span");
- plus.className = "placeholder-plus";
- plus.textContent = "+";
-
- const small = document.createElement("small");
- small.textContent = label;
-
- box.append(plus,small);
- return box;
-}
-
-function makePhoto(product,photo){
- const img = document.createElement("img");
- img.src = photoPath(product,photo.key);
- img.alt = photo.en;
-
- img.onerror = function(){
-  img.replaceWith(makePlaceholder(
-   currentLanguage === "ar" ? photo.ar : photo.en
-  ));
- };
-
- return img;
-}
-
-function openViewer(product,photo){
- viewerContent.querySelectorAll("img,.photo-placeholder")
-  .forEach(el => el.remove());
-
- const img = document.createElement("img");
- img.src = photoPath(product,photo.key);
- img.alt = photo.en;
-
- img.onerror = function(){
-  img.replaceWith(makePlaceholder(
-   currentLanguage === "ar" ? photo.ar : photo.en
-  ));
- };
-
- viewerContent.appendChild(img);
- imageViewer.classList.add("active");
- imageViewer.setAttribute("aria-hidden","false");
- document.body.style.overflow = "hidden";
- viewerClose.focus();
-}
-
-function loadGallery(product){
- currentProduct = product;
-
- galleryMain.innerHTML = "";
- galleryMain.appendChild(makePhoto(product,photoNames[0]));
- galleryMain.onclick = () => openViewer(product,photoNames[0]);
-
- galleryThumbnails.innerHTML = "";
-
- photoNames.forEach(function(photo){
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "gallery-thumb";
-  button.setAttribute("aria-label",photo.en+" - enlarge photo");
-  button.appendChild(makePhoto(product,photo));
-  button.addEventListener("click",() => openViewer(product,photo));
-  galleryThumbnails.appendChild(button);
- });
-}
-
-/* LANGUAGE */
-
-function updateLanguage(){
-  document.documentElement.lang = currentLanguage;
-  document.body.dir = currentLanguage === "ar" ? "rtl" : "ltr";
-
-  document.querySelectorAll("[data-en][data-ar]").forEach(function(element){
-    element.innerHTML = element.dataset[currentLanguage];
-  });
-
-  if(languageBtn){
-    languageBtn.textContent =
-      currentLanguage === "en" ? "AR العربية" : "EN English";
-  }
-
-  if(gameName){
-    gameName.placeholder =
-      currentLanguage === "en" ? "YOUR NAME" : "أدخل اسمك";
-  }
-
-  updateThemeButton();
-
-  if(productModal && productModal.classList.contains("active")){
-    loadGallery(currentProduct);
-  }
-
-  if(gameWinner){
-    showWinner(gameWinner,false);
-  }
-}
-
-function updateThemeButton(){
-  if(!themeBtn) return;
-
-  themeBtn.textContent = isLight
-    ? (currentLanguage === "en" ? "🌙 DARK MODE" : "🌙 الوضع الداكن")
-    : (currentLanguage === "en" ? "☀️ LIGHT MODE" : "☀️ الوضع الفاتح");
-}
-
-function updateTheme(){
-  document.body.classList.toggle("light-mode",isLight);
-
-  const themeMeta = document.querySelector('meta[name="theme-color"]');
-
-  if(themeMeta){
-    themeMeta.setAttribute(
-      "content",
-      isLight ? "#f3ede2" : "#11100e"
-    );
-  }
-
-  localStorage.setItem("aw-theme",isLight ? "light" : "dark");
-  updateThemeButton();
-}
-
-/* PRODUCT DETAILS */
-
-document.querySelectorAll(".product-slot").forEach(function(slot){
- slot.addEventListener("click",function(){
-  const product = Number(slot.dataset.product);
-  loadGallery(product);
-  productModal.classList.add("active");
-  productModal.setAttribute("aria-hidden","false");
-  document.body.style.overflow = "hidden";
-  modalClose.focus();
- });
-});
-
-function closeProductModal(){
- productModal.classList.remove("active");
- productModal.setAttribute("aria-hidden","true");
- document.body.style.overflow = "";
-}
-
-modalClose.addEventListener("click",closeProductModal);
-
-productModal.addEventListener("click",function(event){
- if(event.target === productModal) closeProductModal();
-});
-
-/* IMAGE VIEWER */
-
-function closeViewer(){
- imageViewer.classList.remove("active");
- imageViewer.setAttribute("aria-hidden","true");
-
- if(!productModal.classList.contains("active")){
-  document.body.style.overflow = "";
- }
-}
-
-viewerClose.addEventListener("click",closeViewer);
-
-imageViewer.addEventListener("click",function(event){
- if(event.target === imageViewer) closeViewer();
-});
-
-document.addEventListener("keydown",function(event){
- if(event.key === "Escape"){
-  if(imageViewer.classList.contains("active")){
-   closeViewer();
-  }else if(productModal.classList.contains("active")){
-   closeProductModal();
-  }
- }
-});
-
-/* SUPABASE GAME */
-
-const SUPABASE_URL =
- "https://nukiuulwmlbbfyzyntly.supabase.co";
-
-const SUPABASE_ANON_KEY =
- "sb_publishable_L6U6tQFbHLbdyqOPHa745g_iYEDK-tz";
-
-const GAME_FUNCTION =
- SUPABASE_URL + "/functions/v1/submit-game-attempt";
-
 const gameName = document.getElementById("gameName");
 const submitGame = document.getElementById("submitGame");
 const gameMessage = document.getElementById("gameMessage");
 const winnerCard = document.getElementById("winnerCard");
 const winnerCode = document.getElementById("winnerCode");
 const copyWinnerCode = document.getElementById("copyWinnerCode");
+
 const collectionCoupon = document.getElementById("collectionCoupon");
 const collectionDiscountCode = document.getElementById("collectionDiscountCode");
 const collectionCopyCode = document.getElementById("collectionCopyCode");
 
-const gameImage = document.getElementById("gameImage");
-const gameImageLoading = document.getElementById("gameImageLoading");
+const weeklyQuestion = document.getElementById("weeklyQuestion");
+const weeklyOptions = document.getElementById("weeklyOptions");
+const challengeStatus = document.getElementById("challengeStatus");
+const challengeWinners = document.getElementById("challengeWinners");
+const challengeDiscount = document.getElementById("challengeDiscount");
 
-let selectedAnswer = "";
-let gameWinner = null;
-let gameBusy = false;
-
-/* LOAD DYNAMIC GAME IMAGE */
-
-async function loadGameSettings(){
- try{
-  gameImageLoading.textContent =
-   currentLanguage === "en"
-    ? "LOADING GAME IMAGE..."
-    : "جارٍ تحميل صورة اللعبة...";
-
-  const response = await fetch(
-   SUPABASE_URL +
-   "/rest/v1/game_settings?id=eq.1&select=image_url",
-   {
-    method:"GET",
-    headers:{
-     "apikey":SUPABASE_ANON_KEY,
-     "Authorization":"Bearer "+SUPABASE_ANON_KEY,
-     "Accept":"application/json"
-    },
-    cache:"no-store"
-   }
-  );
-
-  if(!response.ok){
-   throw new Error("Could not load game image. Check Supabase permissions.");
-  }
-
-  const settings = await response.json();
-
-  if(!settings.length || !settings[0].image_url){
-   throw new Error("Game image is not configured.");
-  }
-
-  gameImage.onload = function(){
-   gameImage.style.display = "block";
-   gameImageLoading.style.display = "none";
-  };
-
-  gameImage.onerror = function(){
-   gameImage.style.display = "none";
-   gameImageLoading.style.display = "block";
-   gameImageLoading.textContent =
-    currentLanguage === "en"
-     ? "Unable to display game image."
-     : "تعذر عرض صورة اللعبة.";
-  };
-
-  gameImage.src = settings[0].image_url;
-
- }catch(error){
-  console.error("Game image error:",error);
-
-  gameImage.style.display = "none";
-  gameImageLoading.style.display = "block";
-  gameImageLoading.textContent =
-   currentLanguage === "en"
-    ? "Game image could not be loaded."
-    : "تعذر تحميل صورة اللعبة.";
- }
-}
-
-/* SELECT BRAND */
-
-document.querySelectorAll(".brand-option").forEach(button => {
- button.addEventListener("click",() => {
-  if(gameBusy || gameWinner) return;
-
-  document.querySelectorAll(".brand-option").forEach(option => {
-   option.classList.remove("selected");
-  });
-
-  button.classList.add("selected");
-  selectedAnswer = button.dataset.answer;
-  gameMessage.textContent = "";
- });
-});
-
-/* DISPLAY WINNER */
-
-function showWinner(data,scrollToWinner=false){
- gameWinner = data;
-
- winnerCode.textContent = data.discount_code;
- collectionDiscountCode.textContent = data.discount_code;
-
- winnerCard.classList.add("active");
- collectionCoupon.classList.add("active");
-
- submitGame.disabled = true;
-
- document.querySelectorAll(".brand-option").forEach(button => {
-  button.disabled = true;
- });
-
- gameMessage.style.color = "#65c78b";
- gameMessage.textContent =
-  currentLanguage === "en"
-   ? "Congratulations! You won a 15% discount!"
-   : "تهانينا! لقد ربحت خصماً بنسبة 15%!";
-
- gameName.value = data.name || gameName.value;
- gameName.disabled = true;
-
- if(scrollToWinner){
-  winnerCard.scrollIntoView({
-   behavior:"smooth",
-   block:"center"
-  });
- }
-}
-
-/* SUBMIT ANSWER */
-
-submitGame.addEventListener("click",async function(){
- if(gameBusy || gameWinner) return;
-
- const name = gameName.value.trim();
-
- if(!name){
-  gameMessage.style.color = "#d98a78";
-  gameMessage.textContent =
-   currentLanguage === "en" ? "Please enter your name." : "يرجى إدخال اسمك.";
-  gameName.focus();
-  return;
- }
-
- if(!selectedAnswer){
-  gameMessage.style.color = "#d98a78";
-  gameMessage.textContent =
-   currentLanguage === "en" ? "Please select a brand." : "يرجى اختيار علامة تجارية.";
-  return;
- }
-
- gameBusy = true;
- submitGame.disabled = true;
- submitGame.textContent = currentLanguage === "en" ? "CHECKING..." : "جارٍ التحقق...";
-
- gameMessage.style.color = "var(--muted)";
- gameMessage.textContent =
-  currentLanguage === "en" ? "Checking your answer..." : "جارٍ التحقق من إجابتك...";
-
-
-/* WEEKLY CHALLENGE - SUPABASE */
+/* SUPABASE CONFIGURATION */
 
 const SUPABASE_URL =
  "https://nukiuulwmlbbfyzyntly.supabase.co";
@@ -1118,33 +777,516 @@ const SUPABASE_ANON_KEY =
 const GAME_FUNCTION =
  SUPABASE_URL + "/functions/v1/submit-weekly-challenge-attempt";
 
-const gameName = document.getElementById("gameName");
-const submitGame = document.getElementById("submitGame");
-const gameMessage = document.getElementById("gameMessage");
-const winnerCard = document.getElementById("winnerCard");
-const winnerCode = document.getElementById("winnerCode");
-const copyWinnerCode = document.getElementById("copyWinnerCode");
+/* GENERAL STATE */
+
+let currentLanguage =
+ localStorage.getItem("aw-language") || "en";
+
+let isLight =
+ localStorage.getItem("aw-theme") === "light";
+
+let currentProduct = 1;
 
 let activeChallenge = null;
 let selectedAnswer = "";
 let gameWinner = null;
 let gameBusy = false;
 
-/* GAME MESSAGES */
+/* ==========================================
+   LANGUAGE SYSTEM
+========================================== */
+
+function updateLanguage(){
+
+ document.documentElement.lang = currentLanguage;
+
+ document.body.dir =
+  currentLanguage === "ar" ? "rtl" : "ltr";
+
+ document.querySelectorAll("[data-en][data-ar]").forEach(function(element){
+
+  element.innerHTML =
+   element.dataset[currentLanguage];
+
+ });
+
+ if(languageBtn){
+
+  languageBtn.textContent =
+   currentLanguage === "en"
+    ? "AR العربية"
+    : "EN English";
+
+ }
+
+ if(gameName){
+
+  gameName.placeholder =
+   currentLanguage === "en"
+    ? "YOUR NAME"
+    : "أدخل اسمك";
+
+  gameName.setAttribute(
+   "aria-label",
+   currentLanguage === "en" ? "Your name" : "اسمك"
+  );
+
+ }
+
+ if(submitGame){
+
+  submitGame.textContent =
+   currentLanguage === "en"
+    ? "SUBMIT ANSWER"
+    : "إرسال الإجابة";
+
+ }
+
+ updateThemeButton();
+
+ if(productModal.classList.contains("active")){
+
+  loadGallery(currentProduct);
+
+ }
+
+ if(activeChallenge){
+
+  weeklyQuestion.textContent =
+   activeChallenge.question || "";
+
+  if(gameWinner){
+
+   showWinner(gameWinner,false);
+
+  }
+
+ }
+
+ if(!gameWinner && activeChallenge){
+
+  updateChallengeInstructions();
+
+ }
+
+ if(gameWinner){
+
+  winnerCode.textContent = gameWinner.discount_code;
+
+  collectionDiscountCode.textContent =
+   gameWinner.discount_code;
+
+ }
+
+}
+
+/* ==========================================
+   THEME SYSTEM
+========================================== */
+
+function updateThemeButton(){
+
+ if(!themeBtn) return;
+
+ themeBtn.textContent = isLight
+
+  ? (currentLanguage === "en"
+     ? "🌙 DARK MODE"
+     : "🌙 الوضع الداكن")
+
+  : (currentLanguage === "en"
+     ? "☀️ LIGHT MODE"
+     : "☀️ الوضع الفاتح");
+
+}
+
+function updateTheme(){
+
+ document.body.classList.toggle(
+  "light-mode",
+  isLight
+ );
+
+ const themeMeta =
+  document.querySelector('meta[name="theme-color"]');
+
+ if(themeMeta){
+
+  themeMeta.setAttribute(
+   "content",
+   isLight ? "#f3ede2" : "#11100e"
+  );
+
+ }
+
+ localStorage.setItem(
+  "aw-theme",
+  isLight ? "light" : "dark"
+ );
+
+ updateThemeButton();
+
+}
+
+/* LANGUAGE BUTTON */
+
+languageBtn.addEventListener("click",function(){
+
+ currentLanguage =
+  currentLanguage === "en" ? "ar" : "en";
+
+ localStorage.setItem(
+  "aw-language",
+  currentLanguage
+ );
+
+ updateLanguage();
+
+});
+
+/* THEME BUTTON */
+
+themeBtn.addEventListener("click",function(){
+
+ isLight = !isLight;
+
+ updateTheme();
+
+});
+
+/* ==========================================
+   PRODUCT GALLERY
+========================================== */
+
+const photoNames = [
+
+ {key:"front",en:"FRONT VIEW",ar:"الصورة الأمامية"},
+ {key:"back",en:"BACK VIEW",ar:"الصورة الخلفية"},
+ {key:"side",en:"SIDE VIEW",ar:"الصورة الجانبية"},
+ {key:"detail",en:"DETAIL VIEW",ar:"صورة التفاصيل"}
+
+];
+
+function photoPath(product,key){
+
+ return "products/product-" +
+  product + "-" + key + ".jpg";
+
+}
+
+function makePlaceholder(label){
+
+ const box = document.createElement("div");
+
+ box.className = "photo-placeholder";
+
+ const plus = document.createElement("span");
+
+ plus.className = "placeholder-plus";
+ plus.textContent = "+";
+
+ const small = document.createElement("small");
+
+ small.textContent = label;
+
+ box.append(plus,small);
+
+ return box;
+
+}
+
+function makePhoto(product,photo){
+
+ const img = document.createElement("img");
+
+ img.src = photoPath(product,photo.key);
+
+ img.alt = currentLanguage === "en"
+  ? photo.en
+  : photo.ar;
+
+ img.onerror = function(){
+
+  if(img.parentNode){
+
+   img.replaceWith(
+    makePlaceholder(
+     currentLanguage === "ar" ? photo.ar : photo.en
+    )
+   );
+
+  }
+
+ };
+
+ return img;
+
+}
+
+/* ENLARGE PRODUCT PHOTO */
+
+function openViewer(product,photo){
+
+ viewerContent.querySelectorAll(
+  "img,.photo-placeholder"
+ ).forEach(el => el.remove());
+
+ const img = document.createElement("img");
+
+ img.src = photoPath(product,photo.key);
+
+ img.alt = currentLanguage === "en"
+  ? photo.en
+  : photo.ar;
+
+ img.onerror = function(){
+
+  if(img.parentNode){
+
+   img.replaceWith(
+    makePlaceholder(
+     currentLanguage === "ar" ? photo.ar : photo.en
+    )
+   );
+
+  }
+
+ };
+
+ viewerContent.appendChild(img);
+
+ imageViewer.classList.add("active");
+
+ imageViewer.setAttribute("aria-hidden","false");
+
+ document.body.style.overflow = "hidden";
+
+ viewerClose.focus();
+
+}
+
+/* LOAD PRODUCT GALLERY */
+
+function loadGallery(product){
+
+ currentProduct = product;
+
+ galleryMain.innerHTML = "";
+
+ galleryMain.appendChild(
+  makePhoto(product,photoNames[0])
+ );
+
+ galleryMain.onclick = function(){
+
+  openViewer(product,photoNames[0]);
+
+ };
+
+ galleryThumbnails.innerHTML = "";
+
+ photoNames.forEach(function(photo){
+
+  const button = document.createElement("button");
+
+  button.type = "button";
+
+  button.className = "gallery-thumb";
+
+  button.setAttribute(
+   "aria-label",
+   (currentLanguage === "en" ? photo.en : photo.ar)
+    + " - enlarge photo"
+  );
+
+  button.appendChild(
+   makePhoto(product,photo)
+  );
+
+  button.addEventListener("click",function(){
+
+   openViewer(product,photo);
+
+  });
+
+  galleryThumbnails.appendChild(button);
+
+ });
+
+}
+
+/* OPEN PRODUCT DETAILS */
+
+document.querySelectorAll(".product-slot").forEach(function(slot){
+
+ slot.addEventListener("click",function(){
+
+  const product = Number(slot.dataset.product);
+
+  loadGallery(product);
+
+  productModal.classList.add("active");
+
+  productModal.setAttribute("aria-hidden","false");
+
+  document.body.style.overflow = "hidden";
+
+  modalClose.focus();
+
+ });
+
+});
+
+/* CLOSE PRODUCT DETAILS */
+
+function closeProductModal(){
+
+ productModal.classList.remove("active");
+
+ productModal.setAttribute("aria-hidden","true");
+
+ document.body.style.overflow = "";
+
+}
+
+modalClose.addEventListener("click",closeProductModal);
+
+productModal.addEventListener("click",function(event){
+
+ if(event.target === productModal){
+
+  closeProductModal();
+
+ }
+
+});
+
+/* ==========================================
+   FULL SCREEN IMAGE VIEWER
+========================================== */
+
+function closeViewer(){
+
+ imageViewer.classList.remove("active");
+
+ imageViewer.setAttribute("aria-hidden","true");
+
+ if(!productModal.classList.contains("active")){
+
+  document.body.style.overflow = "";
+
+ }else{
+
+  document.body.style.overflow = "hidden";
+
+ }
+
+}
+
+viewerClose.addEventListener("click",closeViewer);
+
+imageViewer.addEventListener("click",function(event){
+
+ if(event.target === imageViewer){
+
+  closeViewer();
+
+ }
+
+});
+
+/* ESCAPE KEY */
+
+document.addEventListener("keydown",function(event){
+
+ if(event.key === "Escape"){
+
+  if(imageViewer.classList.contains("active")){
+
+   closeViewer();
+
+  }else if(productModal.classList.contains("active")){
+
+   closeProductModal();
+
+  }
+
+ }
+
+});
+
+/* ==========================================
+   WEEKLY CHALLENGE
+========================================== */
 
 function setGameMessage(message,type="normal"){
+
  gameMessage.textContent = message;
+
  gameMessage.style.color =
   type === "error" ? "#d98a78" :
   type === "success" ? "#65c78b" :
   "var(--muted)";
+
 }
 
-/* LOAD ACTIVE CHALLENGE */
+/* CHALLENGE INSTRUCTIONS */
+
+function updateChallengeInstructions(){
+
+ if(gameWinner){
+
+  return;
+
+ }
+
+ if(gameBusy){
+
+  return;
+
+ }
+
+ if(!activeChallenge){
+
+  return;
+
+ }
+
+ if(!selectedAnswer){
+
+  setGameMessage(
+   currentLanguage === "en"
+    ? "ENTER YOUR NAME AND CHOOSE AN ANSWER."
+    : "أدخل اسمك واختر إجابتك."
+  );
+
+ }else{
+
+  setGameMessage(
+   currentLanguage === "en"
+    ? "YOUR ANSWER IS SELECTED. SUBMIT WHEN READY."
+    : "تم اختيار إجابتك. اضغط على إرسال عندما تكون مستعداً."
+  );
+
+ }
+
+}
+
+/* LOAD ACTIVE WEEKLY CHALLENGE */
 
 async function loadWeeklyChallenge(){
 
  submitGame.disabled = true;
+
+ weeklyQuestion.textContent =
+  currentLanguage === "en"
+   ? "LOADING CHALLENGE..."
+   : "جارٍ تحميل التحدي...";
+
+ weeklyOptions.replaceChildren();
+
+ challengeStatus.textContent = "";
+
  setGameMessage(
   currentLanguage === "en"
    ? "LOADING WEEKLY CHALLENGE..."
@@ -1154,34 +1296,62 @@ async function loadWeeklyChallenge(){
  try{
 
   const response = await fetch(
-   SUPABASE_URL + "/rest/v1/rpc/get_active_weekly_challenge",
+
+   SUPABASE_URL +
+   "/rest/v1/rpc/get_active_weekly_challenge",
+
    {
+
     method:"POST",
+
     headers:{
+
      "apikey":SUPABASE_ANON_KEY,
-     "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+
+     "Authorization":"Bearer " + SUPABASE_ANON_KEY,
+
      "Content-Type":"application/json"
+
     },
+
     body:"{}",
+
     cache:"no-store"
+
    }
+
   );
 
   if(!response.ok){
-   throw new Error("Could not load the weekly challenge.");
+
+   throw new Error(
+    "Could not load the weekly challenge."
+   );
+
   }
 
-  const challenge = await response.json();
+  let challenge = await response.json();
+
+  /* SUPPORT SINGLE OBJECT OR ARRAY RESPONSE */
+
+  if(Array.isArray(challenge)){
+
+   challenge = challenge[0] || null;
+
+  }
 
   if(!challenge || !challenge.id){
+
    activeChallenge = null;
 
-   document.getElementById("weeklyQuestion").textContent =
+   weeklyQuestion.textContent =
     currentLanguage === "en"
      ? "NO ACTIVE CHALLENGE"
      : "لا يوجد تحدٍ نشط حالياً";
 
-   document.getElementById("weeklyOptions").replaceChildren();
+   weeklyOptions.replaceChildren();
+
+   challengeStatus.textContent = "";
 
    setGameMessage(
     currentLanguage === "en"
@@ -1190,77 +1360,116 @@ async function loadWeeklyChallenge(){
    );
 
    return;
+
   }
 
   activeChallenge = challenge;
+
   selectedAnswer = "";
+
   gameWinner = null;
 
-  winnerCard.classList.remove("active");
+  gameBusy = false;
+
   gameName.disabled = false;
+
   gameName.value = "";
 
-  document.getElementById("weeklyQuestion").textContent =
-   challenge.question;
+  winnerCard.classList.remove("active");
 
-  const winnersCount = Number(challenge.winners_count || 0);
-  const maxWinners = Number(challenge.max_winners || 6);
+  collectionCoupon.classList.remove("active");
 
-  document.getElementById("challengeWinners").textContent =
+  winnerCode.textContent = "";
+
+  collectionDiscountCode.textContent = "";
+
+  weeklyQuestion.textContent =
+   challenge.question || "";
+
+  const winnersCount =
+   Number(challenge.winners_count || 0);
+
+  const maxWinners =
+   Number(challenge.max_winners || 6);
+
+  const discountPercent =
+   Number(challenge.discount_percent || 15);
+
+  challengeWinners.textContent =
    currentLanguage === "en"
     ? "WINNERS: " + winnersCount + " / " + maxWinners
     : "الفائزون: " + winnersCount + " / " + maxWinners;
 
-  document.getElementById("challengeDiscount").textContent =
+  challengeDiscount.textContent =
    currentLanguage === "en"
-    ? "DISCOUNT: " + challenge.discount_percent + "%"
-    : "الخصم: " + challenge.discount_percent + "%";
-
-  const optionsContainer = document.getElementById("weeklyOptions");
-  optionsContainer.replaceChildren();
+    ? "DISCOUNT: " + discountPercent + "%"
+    : "الخصم: " + discountPercent + "%";
 
   const options = Array.isArray(challenge.options)
-   ? challenge.options : [];
+   ? challenge.options
+   : [];
 
-  options.forEach(option=>{
+  weeklyOptions.replaceChildren();
+
+  options.forEach(function(option){
 
    const button = document.createElement("button");
 
    button.type = "button";
+
    button.className = "brand-option";
+
    button.textContent = option.text;
+
    button.dataset.optionId = option.id;
 
-   button.addEventListener("click",()=>{
+   button.addEventListener("click",function(){
 
     if(gameBusy || gameWinner) return;
 
-    optionsContainer.querySelectorAll("button").forEach(item=>{
+    weeklyOptions.querySelectorAll("button").forEach(function(item){
+
      item.classList.remove("selected");
+
     });
 
     button.classList.add("selected");
+
     selectedAnswer = option.id;
 
-    setGameMessage("");
     submitGame.disabled = false;
+
+    updateChallengeInstructions();
+
    });
 
-   optionsContainer.appendChild(button);
+   weeklyOptions.appendChild(button);
+
   });
 
   if(options.length < 2){
-   throw new Error("The challenge does not have enough answer options.");
+
+   throw new Error(
+    "The challenge does not have enough answer options."
+   );
+
   }
 
+  /* CHECK OPENING AND CLOSING TIMES */
+
   const now = Date.now();
+
   const opens = challenge.opens_at
-   ? new Date(challenge.opens_at).getTime() : null;
+   ? new Date(challenge.opens_at).getTime()
+   : null;
+
   const closes = challenge.closes_at
-   ? new Date(challenge.closes_at).getTime() : null;
+   ? new Date(challenge.closes_at).getTime()
+   : null;
 
   if(opens && now < opens){
-   document.getElementById("challengeStatus").textContent =
+
+   challengeStatus.textContent =
     currentLanguage === "en"
      ? "CHALLENGE OPENS: " + new Date(opens).toLocaleString()
      : "موعد بداية التحدي: " + new Date(opens).toLocaleString();
@@ -1272,10 +1481,12 @@ async function loadWeeklyChallenge(){
    );
 
    return;
+
   }
 
   if(closes && now >= closes){
-   document.getElementById("challengeStatus").textContent =
+
+   challengeStatus.textContent =
     currentLanguage === "en"
      ? "CHALLENGE CLOSED"
      : "التحدي مغلق";
@@ -1287,20 +1498,17 @@ async function loadWeeklyChallenge(){
    );
 
    return;
+
   }
 
-  document.getElementById("challengeStatus").textContent =
+  challengeStatus.textContent =
    currentLanguage === "en"
     ? "CHOOSE YOUR ANSWER AND WIN!"
     : "اختر إجابتك واربح!";
 
-  setGameMessage(
-   currentLanguage === "en"
-    ? "ENTER YOUR NAME AND CHOOSE AN ANSWER."
-    : "أدخل اسمك واختر إجابتك."
-  );
+  updateChallengeInstructions();
 
-  submitGame.disabled = false;
+  submitGame.disabled = true;
 
  }catch(error){
 
@@ -1308,16 +1516,29 @@ async function loadWeeklyChallenge(){
 
   activeChallenge = null;
 
+  weeklyOptions.replaceChildren();
+
+  weeklyQuestion.textContent =
+   currentLanguage === "en"
+    ? "CHALLENGE UNAVAILABLE"
+    : "التحدي غير متاح";
+
+  submitGame.disabled = true;
+
   setGameMessage(
    currentLanguage === "en"
     ? "UNABLE TO LOAD THE CHALLENGE. PLEASE TRY AGAIN LATER."
     : "تعذر تحميل التحدي. حاول لاحقاً.",
    "error"
   );
+
  }
+
 }
 
-/* DISPLAY WINNER */
+/* ==========================================
+   DISPLAY WINNER
+========================================== */
 
 function showWinner(data,scrollToWinner=false){
 
@@ -1325,12 +1546,22 @@ function showWinner(data,scrollToWinner=false){
 
  winnerCode.textContent = data.discount_code;
 
+ collectionDiscountCode.textContent =
+  data.discount_code;
+
  winnerCard.classList.add("active");
+
+ collectionCoupon.classList.add("active");
+
  submitGame.disabled = true;
 
- document.querySelectorAll("#weeklyOptions button").forEach(button=>{
+ weeklyOptions.querySelectorAll("button").forEach(function(button){
+
   button.disabled = true;
+
  });
+
+ gameName.value = data.name || gameName.value;
 
  gameName.disabled = true;
 
@@ -1342,46 +1573,69 @@ function showWinner(data,scrollToWinner=false){
  );
 
  if(scrollToWinner){
+
   winnerCard.scrollIntoView({
+
    behavior:"smooth",
+
    block:"center"
+
   });
+
  }
+
 }
 
-/* SUBMIT ANSWER */
+/* ==========================================
+   SUBMIT WEEKLY ANSWER
+========================================== */
 
-submitGame.addEventListener("click",async()=>{
+submitGame.addEventListener("click",async function(){
 
- if(gameBusy || gameWinner || !activeChallenge) return;
+ if(gameBusy || gameWinner || !activeChallenge){
+
+  return;
+
+ }
 
  const name = gameName.value.trim();
 
  if(!name){
+
   setGameMessage(
    currentLanguage === "en"
     ? "PLEASE ENTER YOUR NAME."
     : "يرجى إدخال اسمك.",
    "error"
   );
+
   gameName.focus();
+
   return;
+
  }
 
  if(!selectedAnswer){
+
   setGameMessage(
    currentLanguage === "en"
     ? "PLEASE SELECT AN ANSWER."
     : "يرجى اختيار إجابة.",
    "error"
   );
+
   return;
+
  }
 
  gameBusy = true;
+
  submitGame.disabled = true;
+
  submitGame.textContent =
-  currentLanguage === "en" ? "CHECKING..." : "جارٍ التحقق...";
+  currentLanguage === "en"
+   ? "CHECKING..."
+   : "جارٍ التحقق...";
 
  setGameMessage(
   currentLanguage === "en"
@@ -1392,45 +1646,73 @@ submitGame.addEventListener("click",async()=>{
  try{
 
   const response = await fetch(GAME_FUNCTION,{
+
    method:"POST",
+
    headers:{
+
     "Content-Type":"application/json",
+
     "apikey":SUPABASE_ANON_KEY,
-    "Authorization":"Bearer "+SUPABASE_ANON_KEY
+
+    "Authorization":"Bearer " + SUPABASE_ANON_KEY
+
    },
+
    body:JSON.stringify({
+
     name:name,
+
     option_id:selectedAnswer
+
    })
+
   });
 
   const data = await response.json();
 
   if(!response.ok || !data.success){
-   throw new Error(data.message || "Unable to submit your answer.");
+
+   throw new Error(
+    data.message || "Unable to submit your answer."
+   );
+
   }
 
   if(data.is_winner === true){
 
    if(
+
     !data.discount_code ||
+
     Number(data.discount_percent) !== 15
+
    ){
-    throw new Error("Invalid discount information.");
+
+    throw new Error(
+     "Invalid discount information."
+    );
+
    }
 
    showWinner({
+
     name:name,
+
     discount_code:data.discount_code,
+
     discount_percent:15
+
    },true);
 
   }else if(data.is_correct === true){
 
    selectedAnswer = "";
 
-   document.querySelectorAll("#weeklyOptions button").forEach(button=>{
+   weeklyOptions.querySelectorAll("button").forEach(function(button){
+
     button.classList.remove("selected");
+
    });
 
    setGameMessage(
@@ -1446,8 +1728,10 @@ submitGame.addEventListener("click",async()=>{
 
    selectedAnswer = "";
 
-   document.querySelectorAll("#weeklyOptions button").forEach(button=>{
+   weeklyOptions.querySelectorAll("button").forEach(function(button){
+
     button.classList.remove("selected");
+
    });
 
    setGameMessage(
@@ -1458,13 +1742,19 @@ submitGame.addEventListener("click",async()=>{
    );
 
    submitGame.disabled = false;
+
   }
 
   if(data.winners_count != null){
-   document.getElementById("challengeWinners").textContent =
+
+   const maxWinners =
+    Number(activeChallenge.max_winners || 6);
+
+   challengeWinners.textContent =
     currentLanguage === "en"
-     ? "WINNERS: " + data.winners_count + " / 6"
-     : "الفائزون: " + data.winners_count + " / 6";
+     ? "WINNERS: " + data.winners_count + " / " + maxWinners
+     : "الفائزون: " + data.winners_count + " / " + maxWinners;
+
   }
 
  }catch(error){
@@ -1473,9 +1763,11 @@ submitGame.addEventListener("click",async()=>{
 
   setGameMessage(
    error.message ||
-   (currentLanguage === "en"
-    ? "CONNECTION ERROR. PLEASE TRY AGAIN."
-    : "حدث خطأ في الاتصال. حاول مرة أخرى."),
+   (
+    currentLanguage === "en"
+     ? "CONNECTION ERROR. PLEASE TRY AGAIN."
+     : "حدث خطأ في الاتصال. حاول مرة أخرى."
+   ),
    "error"
   );
 
@@ -1489,14 +1781,22 @@ submitGame.addEventListener("click",async()=>{
    currentLanguage === "en"
     ? "SUBMIT ANSWER"
     : "إرسال الإجابة";
+
  }
+
 });
 
-/* COPY DISCOUNT CODE */
+/* ==========================================
+   COPY DISCOUNT CODE
+========================================== */
 
 async function copyDiscountCode(button){
 
- if(!gameWinner || !gameWinner.discount_code) return;
+ if(!gameWinner || !gameWinner.discount_code){
+
+  return;
+
+ }
 
  try{
 
@@ -1509,54 +1809,80 @@ async function copyDiscountCode(button){
   }else{
 
    const temp = document.createElement("textarea");
+
    temp.value = gameWinner.discount_code;
+
    temp.style.position = "fixed";
+
    temp.style.opacity = "0";
 
    document.body.appendChild(temp);
+
    temp.select();
 
    const copied = document.execCommand("copy");
+
    temp.remove();
 
-   if(!copied) throw new Error("Copy failed");
+   if(!copied){
+
+    throw new Error("Copy failed");
+
+   }
+
   }
 
   button.textContent =
-   currentLanguage === "en" ? "COPIED!" : "تم النسخ!";
+   currentLanguage === "en"
+    ? "COPIED!"
+    : "تم النسخ!";
 
  }catch(error){
 
-  button.textContent = gameWinner.discount_code;
+  console.error("Copy error:",error);
+
+  button.textContent =
+   gameWinner.discount_code;
+
  }
+
 }
 
-copyWinnerCode.addEventListener("click",()=>{
+/* WINNER CARD COPY BUTTON */
+
+copyWinnerCode.addEventListener("click",function(){
+
  copyDiscountCode(copyWinnerCode);
+
 });
 
-/* INITIALIZE WEEKLY GAME */
+/* COLLECTION COPY BUTTON */
 
-loadWeeklyChallenge();
-     
+collectionCopyCode.addEventListener("click",function(){
 
-/* LANGUAGE AND THEME BUTTONS */
+ copyDiscountCode(collectionCopyCode);
 
-languageBtn.onclick = function(){
-  currentLanguage = currentLanguage === "en" ? "ar" : "en";
-  localStorage.setItem("aw-language",currentLanguage);
-  updateLanguage();
-};
+});
 
-themeBtn.onclick = function(){
-  isLight = !isLight;
-  updateTheme();
-};
+/* ==========================================
+   INITIALIZATION
+========================================== */
 
-/* INITIALIZE */
+/* APPLY SAVED THEME */
 
 updateTheme();
+
+/* APPLY SAVED LANGUAGE */
+
 updateLanguage();
+
+/* LOAD WEEKLY CHALLENGE FROM SUPABASE */
+
+loadWeeklyChallenge();
+                          
+
+
+  
 
 </script>
 
