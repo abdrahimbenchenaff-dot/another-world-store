@@ -1,3 +1,4 @@
+HTML
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -11,7 +12,6 @@
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-
 :root{
  --bg:#11100e;--header:#181512;--section:#171512;
  --card:#1e1a15;--contact:#211c16;--text:#eee4d3;
@@ -26,11 +26,9 @@ body.light-mode{
 }
 body{
  margin:0;background:var(--bg);color:var(--text);
- font-family:Arial,Helvetica,sans-serif;
- transition:background .3s,color .3s;
+ font-family:Arial,Helvetica,sans-serif;transition:background .3s,color .3s;
 }
 a{color:inherit}
-
 .site-header{
  position:sticky;top:0;z-index:10;display:flex;align-items:center;
  justify-content:space-between;gap:12px;
@@ -50,7 +48,6 @@ a{color:inherit}
  border:1px solid var(--border);padding:10px 12px;
  background:transparent;cursor:pointer;
 }
-
 .hero{
  min-height:570px;display:grid;place-items:center;padding:70px 20px;
  text-align:center;
@@ -74,11 +71,9 @@ body.light-mode .hero{
  background:var(--button);color:var(--button-text);
  text-decoration:none;font-size:11px;font-weight:bold;letter-spacing:1.5px;
 }
-
 .section{width:min(1100px,100%);margin:auto;padding:68px 20px}
 .section-heading{
- text-align:center;margin:0 0 12px;
- letter-spacing:3px;font-family:Georgia,serif;
+ text-align:center;margin:0 0 12px;letter-spacing:3px;font-family:Georgia,serif;
 }
 .section-intro{
  text-align:center;color:var(--muted);font-size:13px;
@@ -92,47 +87,47 @@ body.light-mode .hero{
  object-fit:cover;border:1px solid var(--border);
 }
 .about-note{padding:20px;text-align:left}
-.about-note h3{
- font-family:Georgia,serif;font-size:28px;line-height:1.2;
-}
+.about-note h3{font-family:Georgia,serif;font-size:28px;line-height:1.2}
 .about-note p{color:var(--muted);line-height:1.9;font-size:14px}
-
-.products,.game-section{
- border-top:1px solid var(--border);background:var(--section);
-}
+.products,.game-section{border-top:1px solid var(--border);background:var(--section)}
 .product-grid{
  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
 }
 .product-slot{
- min-height:245px;padding:18px;border:1px dashed var(--border);
- display:flex;flex-direction:column;justify-content:center;align-items:center;
+ min-height:245px;padding:0;border:1px solid var(--border);
+ display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;
  text-align:center;background:var(--card);cursor:pointer;color:var(--text);
- font-family:inherit;width:100%;
+ font-family:inherit;width:100%;overflow:hidden;
  transition:transform .25s,border-color .25s,background .25s;
 }
 .product-slot:hover{
- transform:translateY(-5px);border-color:var(--button);
+ transform:translateY(-5px);border-color:var(--button);background:var(--section);
+}
+.product-slot:focus-visible{outline:2px solid var(--button);outline-offset:4px}
+.product-card-image,.product-loading-image{
+ width:100%;height:220px;object-fit:cover;display:block;
  background:var(--section);
 }
-.product-slot:focus-visible{
- outline:2px solid var(--button);outline-offset:4px;
+.product-loading-image{
+ display:grid;place-items:center;color:var(--muted);font-size:12px;
 }
-.plus{font-size:34px;color:var(--muted)}
-.product-slot h3{font-family:Georgia,serif;font-size:17px}
-.product-slot p{color:var(--muted);font-size:12px;line-height:1.7}
-
-/* PRODUCT DETAILS WINDOW */
+.product-card-info{width:100%;padding:14px}
+.product-card-info h3{font-family:Georgia,serif;font-size:17px;margin:5px 0}
+.product-card-info p{color:var(--muted);font-size:12px;line-height:1.7;margin:6px 0}
+.product-card-price{color:var(--muted);font-size:14px;font-weight:bold}
+.product-empty{
+ grid-column:1/-1;text-align:center;color:var(--muted);
+ padding:35px 10px;line-height:1.8;
+}
 .product-modal{
  position:fixed;inset:0;z-index:100;display:none;align-items:center;
- justify-content:center;padding:20px;background:rgba(0,0,0,.82);
- overflow-y:auto;
+ justify-content:center;padding:20px;background:rgba(0,0,0,.82);overflow-y:auto;
 }
 .product-modal.active{display:flex}
 .modal-content{
  position:relative;width:min(480px,100%);max-height:92vh;overflow-y:auto;
  padding:35px 24px;background:var(--card);
- border:1px solid var(--border);text-align:center;
- animation:modalShow .25s ease;
+ border:1px solid var(--border);text-align:center;animation:modalShow .25s ease;
 }
 @keyframes modalShow{
  from{opacity:0;transform:translateY(15px)}
@@ -144,8 +139,6 @@ body.light-mode .hero{
  color:var(--text);font-size:23px;cursor:pointer;z-index:2;
 }
 body[dir="rtl"] .modal-close{right:auto;left:14px}
-
-/* PRODUCT PHOTO GALLERY */
 .gallery-main{
  width:100%;height:300px;padding:0;margin:0 0 12px;
  border:1px dashed var(--border);background:var(--section);
@@ -167,9 +160,7 @@ body[dir="rtl"] .modal-close{right:auto;left:14px}
  height:95px;padding:0;border:1px solid var(--border);
  background:var(--section);cursor:zoom-in;overflow:hidden;
 }
-.gallery-thumb img{
- width:100%;height:100%;object-fit:cover;display:block;
-}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .gallery-thumb .photo-placeholder{min-height:0;gap:4px}
 .gallery-thumb .placeholder-plus{font-size:22px}
 .gallery-thumb .photo-placeholder small{font-size:8px;letter-spacing:.5px}
@@ -177,12 +168,9 @@ body[dir="rtl"] .modal-close{right:auto;left:14px}
 .gallery-thumb:focus-visible,.gallery-main:focus-visible{
  outline:2px solid var(--button);outline-offset:3px;
 }
-
-/* ENLARGED PHOTO VIEWER */
 .image-viewer{
  position:fixed;inset:0;z-index:200;display:none;
- align-items:center;justify-content:center;padding:18px;
- background:rgba(0,0,0,.95);
+ align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.95);
 }
 .image-viewer.active{display:flex}
 .viewer-content{
@@ -190,19 +178,13 @@ body[dir="rtl"] .modal-close{right:auto;left:14px}
  display:flex;align-items:center;justify-content:center;
 }
 .viewer-content img{max-width:100%;max-height:100%;object-fit:contain}
-.viewer-content .photo-placeholder{
- width:100%;height:100%;border:1px dashed #77664e;
-}
+.viewer-content .photo-placeholder{width:100%;height:100%;border:1px dashed #77664e}
 .viewer-close{
  position:absolute;top:-42px;right:0;width:38px;height:38px;
- border:1px solid #9b896e;background:#211c16;
- color:#fff;font-size:25px;cursor:pointer;
+ border:1px solid #9b896e;background:#211c16;color:#fff;font-size:25px;cursor:pointer;
 }
 body[dir="rtl"] .viewer-close{right:auto;left:0}
-
-.modal-content h2{
- font-family:Georgia,serif;font-size:27px;margin:15px 0;
-}
+.modal-content h2{font-family:Georgia,serif;font-size:27px;margin:15px 0}
 .modal-description{color:var(--muted);line-height:1.8;font-size:13px}
 .modal-price{font-family:Georgia,serif;font-size:20px;margin:20px 0}
 .modal-whatsapp{
@@ -210,8 +192,6 @@ body[dir="rtl"] .viewer-close{right:auto;left:0}
  color:var(--button-text);text-decoration:none;font-size:11px;
  font-weight:bold;letter-spacing:1px;margin-top:10px;
 }
-
-/* GUESS THE BRAND GAME */
 .game-box{
  max-width:650px;margin:auto;padding:30px 20px;
  border:1px solid var(--border);text-align:center;background:var(--card);
@@ -222,127 +202,80 @@ body[dir="rtl"] .viewer-close{right:auto;left:0}
 }
 .game-discount{color:var(--muted);font-size:23px;letter-spacing:3px;margin:15px 0}
 .game-description{color:var(--muted);font-size:13px;line-height:1.8}
-
-/* DYNAMIC GAME IMAGE */
 .game-image-container{
- width:100%;
- max-width:420px;
- margin:22px auto;
- background:var(--section);
- border:1px solid var(--border);
- overflow:hidden;
+ width:100%;max-width:420px;margin:22px auto;
+ background:var(--section);border:1px solid var(--border);overflow:hidden;
 }
 .game-image-container img{
- width:100%;
- height:320px;
- object-fit:contain;
- display:block;
+ width:100%;height:320px;object-fit:contain;display:block;
 }
-.game-image-loading{
- color:var(--muted);
- padding:35px 10px;
- font-size:12px;
-}
-
-.brand-options{
- display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:25px 0;
-}
+.game-image-loading{color:var(--muted);padding:35px 10px;font-size:12px}
+.brand-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:25px 0}
 .brand-option{
- padding:17px 8px;border:1px solid var(--border);
- color:var(--text);font-weight:bold;letter-spacing:2px;
- background:var(--section);cursor:pointer;font-family:inherit;
- transition:.2s;
+ padding:17px 8px;border:1px solid var(--border);color:var(--text);
+ font-weight:bold;letter-spacing:2px;background:var(--section);
+ cursor:pointer;font-family:inherit;transition:.2s;
 }
-.brand-option:hover,.brand-option.selected{
- border-color:var(--button);background:var(--contact);
-}
-.brand-option:focus-visible{
- outline:2px solid var(--button);outline-offset:3px;
-}
+.brand-option:hover,.brand-option.selected{border-color:var(--button);background:var(--contact)}
+.brand-option:focus-visible{outline:2px solid var(--button);outline-offset:3px}
 .brand-option:disabled{opacity:.5;cursor:not-allowed}
-
 .game-name{
  display:block;width:100%;max-width:350px;margin:20px auto 0;
  padding:14px;background:var(--section);color:var(--text);
- border:1px solid var(--border);font-size:14px;outline:none;
- text-align:center;
+ border:1px solid var(--border);font-size:14px;outline:none;text-align:center;
 }
 .game-name:focus{border-color:var(--button)}
 .game-submit{
- display:block;width:100%;max-width:350px;margin:15px auto;
- padding:15px;border:0;background:var(--button);
- color:var(--button-text);font-weight:bold;letter-spacing:2px;
- cursor:pointer;transition:opacity .2s;
+ display:block;width:100%;max-width:350px;margin:15px auto;padding:15px;
+ border:0;background:var(--button);color:var(--button-text);
+ font-weight:bold;letter-spacing:2px;cursor:pointer;transition:opacity .2s;
 }
 .game-submit:disabled{opacity:.6;cursor:wait}
-.game-message{
- margin:18px auto;line-height:1.8;font-size:13px;
- min-height:22px;
-}
+.game-message{margin:18px auto;line-height:1.8;font-size:13px;min-height:22px}
 .winner-card{
- display:none;margin:22px auto;padding:22px 14px;
- max-width:400px;border:1px solid var(--button);
- background:var(--section);
+ display:none;margin:22px auto;padding:22px 14px;max-width:400px;
+ border:1px solid var(--button);background:var(--section);
 }
 .winner-card.active{display:block}
-.winner-card h3{
- font-family:Georgia,serif;letter-spacing:2px;
-}
+.winner-card h3{font-family:Georgia,serif;letter-spacing:2px}
 .winner-code{
- display:block;padding:14px 8px;margin:15px 0;
- background:var(--card);border:1px dashed var(--button);
- font-size:18px;font-weight:bold;letter-spacing:1px;
- overflow-wrap:anywhere;
+ display:block;padding:14px 8px;margin:15px 0;background:var(--card);
+ border:1px dashed var(--button);font-size:18px;font-weight:bold;
+ letter-spacing:1px;overflow-wrap:anywhere;
 }
 .copy-code{
  padding:12px 20px;background:var(--button);
  color:var(--button-text);border:0;cursor:pointer;font-weight:bold;
 }
 .copy-code:disabled{opacity:.6}
-
-/* WINNER REWARD IN COLLECTION */
 .collection-coupon{
- display:none;margin:20px auto 30px;padding:20px;
- max-width:500px;border:1px solid var(--button);
- text-align:center;background:var(--card);
+ display:none;margin:20px auto 30px;padding:20px;max-width:500px;
+ border:1px solid var(--button);text-align:center;background:var(--card);
 }
 .collection-coupon.active{display:block}
-.collection-coupon h3{
- font-family:Georgia,serif;letter-spacing:2px;
-}
+.collection-coupon h3{font-family:Georgia,serif;letter-spacing:2px}
 .collection-coupon strong{
- display:block;margin:15px;font-size:22px;
- overflow-wrap:anywhere;
+ display:block;margin:15px;font-size:22px;overflow-wrap:anywhere;
 }
 .collection-coupon p{color:var(--muted);line-height:1.8;font-size:13px}
-
-.contact{
- text-align:center;background:var(--contact);
- border-top:1px solid var(--border);
-}
+.contact{text-align:center;background:var(--contact);border-top:1px solid var(--border)}
 .contact p{color:var(--muted);line-height:1.8}
-footer{
- padding:25px 15px;text-align:center;
- color:var(--muted);font-size:11px;letter-spacing:1px;
-}
+footer{padding:25px 15px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:1px}
 body[dir="rtl"] .about-note{text-align:right}
 body[dir="rtl"] .eyebrow{letter-spacing:1px}
 body[dir="rtl"] .game-title{letter-spacing:1px}
-
 @media(max-width:700px){
  .site-header{padding:10px}
  .brand-logo{width:40px;height:40px}
  .brand-name{font-size:11px;letter-spacing:1px}
  .brand-tag{font-size:7px;letter-spacing:1px}
- .nav-link,.language-btn,.theme-btn{
-  padding:9px 7px;font-size:9px;
- }
+ .nav-link,.language-btn,.theme-btn{padding:9px 7px;font-size:9px}
  .header-actions{gap:5px}
  .hero{min-height:520px}
  .about-grid{grid-template-columns:1fr}
  .about-note{text-align:center}
  .product-grid{grid-template-columns:1fr 1fr}
- .product-slot{min-height:190px;padding:12px}
+ .product-card-image,.product-loading-image{height:170px}
  .gallery-main{height:260px}
  .gallery-thumb{height:78px}
  .modal-content{padding:42px 16px 25px}
@@ -351,9 +284,7 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
 @media(max-width:380px){
  .brand{gap:6px}
  .brand-name{font-size:10px}
- .nav-link,.language-btn,.theme-btn{
-  font-size:8px;padding:8px 5px;
- }
+ .nav-link,.language-btn,.theme-btn{font-size:8px;padding:8px 5px}
  .product-grid{grid-template-columns:1fr}
 }
 </style>
@@ -369,268 +300,102 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
    <p class="brand-tag">VINTAGE STREETWEAR</p>
   </div>
  </div>
-
  <div class="header-actions">
-  <a class="nav-link" href="#products"
-     data-en="COLLECTION" data-ar="المجموعة">COLLECTION</a>
+  <a class="nav-link" href="#products" data-en="COLLECTION" data-ar="المجموعة">COLLECTION</a>
   <button class="language-btn" id="languageBtn" type="button">AR العربية</button>
   <button class="theme-btn" id="themeBtn" type="button">🌙 DARK MODE</button>
  </div>
 </header>
 
 <main>
-
-<!-- HERO -->
 <section class="hero">
  <div class="hero-content">
-  <p class="eyebrow"
-     data-en="RARE PIECES • VINTAGE • STREETWEAR"
-     data-ar="قطع نادرة • ملابس فينتيج • ستريت وير">
+  <p class="eyebrow" data-en="RARE PIECES • VINTAGE • STREETWEAR" data-ar="قطع نادرة • ملابس فينتيج • ستريت وير">
    RARE PIECES • VINTAGE • STREETWEAR
   </p>
-
-  <h1 data-en="WELCOME TO<br>ANOTHER WORLD"
-      data-ar="مرحباً بك في<br>عالم آخر">
+  <h1 data-en="WELCOME TO<br>ANOTHER WORLD" data-ar="مرحباً بك في<br>عالم آخر">
    WELCOME TO<br>ANOTHER WORLD
   </h1>
-
-  <p class="hero-copy"
-     data-en="Not just clothes. A different world.<br>Discover unique vintage and streetwear pieces."
-     data-ar="ليست مجرد ملابس، بل عالم مختلف.<br>اكتشف قطعاً مميزة من ملابس الفينتيج والستريت وير.">
-   Not just clothes. A different world.<br>
-   Discover unique vintage and streetwear pieces.
+  <p class="hero-copy" data-en="Not just clothes. A different world.<br>Discover unique vintage and streetwear pieces." data-ar="ليست مجرد ملابس، بل عالم مختلف.<br>اكتشف قطعاً مميزة من ملابس الفينتيج والستريت وير.">
+   Not just clothes. A different world.<br>Discover unique vintage and streetwear pieces.
   </p>
-
-  <a class="button" href="#products"
-     data-en="EXPLORE COLLECTION"
-     data-ar="اكتشف المجموعة">
-   EXPLORE COLLECTION
-  </a>
+  <a class="button" href="#products" data-en="EXPLORE COLLECTION" data-ar="اكتشف المجموعة">EXPLORE COLLECTION</a>
  </div>
 </section>
 
-<!-- ABOUT -->
 <section class="section" id="about">
  <h2 class="section-heading" data-en="OUR WORLD" data-ar="عالمنا">OUR WORLD</h2>
-
- <p class="section-intro"
-    data-en="Different pieces. Same world. A carefully selected collection for people who like their own style."
-    data-ar="قطع مختلفة، وعالم واحد. مجموعة مختارة بعناية للأشخاص الذين يحبون أسلوبهم الخاص.">
+ <p class="section-intro" data-en="Different pieces. Same world. A carefully selected collection for people who like their own style." data-ar="قطع مختلفة، وعالم واحد. مجموعة مختارة بعناية للأشخاص الذين يحبون أسلوبهم الخاص.">
   Different pieces. Same world. A carefully selected collection for people who like their own style.
  </p>
-
  <div class="about-grid">
   <img src="photo-1.jpg" alt="Another World streetwear portrait">
-
   <div class="about-note">
-   <p class="eyebrow"
-      data-en="THE ANOTHER WORLD IDENTITY"
-      data-ar="هوية عالم آخر">THE ANOTHER WORLD IDENTITY</p>
-
-   <h3 data-en="NOT MADE<br>TO FIT IN."
-       data-ar="لسنا هنا<br>لنشبه الآخرين.">
-    NOT MADE<br>TO FIT IN.
-   </h3>
-
-   <p data-en="We look for distinctive vintage and streetwear pieces. Every item is selected for its character, style and condition."
-      data-ar="نبحث عن قطع مميزة من ملابس الفينتيج والستريت وير. نختار كل قطعة بعناية حسب طابعها وأسلوبها وحالتها.">
+   <p class="eyebrow" data-en="THE ANOTHER WORLD IDENTITY" data-ar="هوية عالم آخر">THE ANOTHER WORLD IDENTITY</p>
+   <h3 data-en="NOT MADE<br>TO FIT IN." data-ar="لسنا هنا<br>لنشبه الآخرين.">NOT MADE<br>TO FIT IN.</h3>
+   <p data-en="We look for distinctive vintage and streetwear pieces. Every item is selected for its character, style and condition." data-ar="نبحث عن قطع مميزة من ملابس الفينتيج والستريت وير. نختار كل قطعة بعناية حسب طابعها وأسلوبها وحالتها.">
     We look for distinctive vintage and streetwear pieces. Every item is selected for its character, style and condition.
    </p>
   </div>
-
   <div class="about-note">
-   <p class="eyebrow"
-      data-en="A DIFFERENT POINT OF VIEW"
-      data-ar="نظرة مختلفة">A DIFFERENT POINT OF VIEW</p>
-
-   <h3 data-en="FIND YOUR<br>OWN PIECE."
-       data-ar="اعثر على<br>قطعتك الخاصة.">
-    FIND YOUR<br>OWN PIECE.
-   </h3>
-
-   <p data-en="Explore the collection and contact us directly when you find something you like."
-      data-ar="اكتشف مجموعتنا وتواصل معنا مباشرة عندما تجد قطعة تعجبك.">
+   <p class="eyebrow" data-en="A DIFFERENT POINT OF VIEW" data-ar="نظرة مختلفة">A DIFFERENT POINT OF VIEW</p>
+   <h3 data-en="FIND YOUR<br>OWN PIECE." data-ar="اعثر على<br>قطعتك الخاصة.">FIND YOUR<br>OWN PIECE.</h3>
+   <p data-en="Explore the collection and contact us directly when you find something you like." data-ar="اكتشف مجموعتنا وتواصل معنا مباشرة عندما تجد قطعة تعجبك.">
     Explore the collection and contact us directly when you find something you like.
    </p>
   </div>
-
   <img src="photo-2.jpg" alt="Another World streetwear outfit">
  </div>
 </section>
-
-
 
 <!-- WEEKLY CHALLENGE -->
 <section class="game-section" id="game">
  <div class="section">
   <div class="game-box">
-
    <p class="eyebrow">ANOTHER WORLD EXCLUSIVE</p>
-
    <h2 class="game-title">WEEKLY CHALLENGE</h2>
-
-   <h3 class="game-discount"
-       data-en="WIN 15% DISCOUNT"
-       data-ar="اربح خصماً بنسبة 15%">
-    WIN 15% DISCOUNT
-   </h3>
-
-   <h2 id="weeklyQuestion" class="game-title">
-    LOADING CHALLENGE...
-   </h2>
-
+   <h3 class="game-discount" data-en="WIN 15% DISCOUNT" data-ar="اربح خصماً بنسبة 15%">WIN 15% DISCOUNT</h3>
+   <h2 id="weeklyQuestion" class="game-title">LOADING CHALLENGE...</h2>
    <p id="challengeStatus" class="game-description"></p>
-
-   <input
-    type="text"
-    id="gameName"
-    class="game-name"
-    maxlength="60"
-    placeholder="YOUR NAME"
-    autocomplete="name"
-    aria-label="Your name">
-
+   <input type="text" id="gameName" class="game-name" maxlength="60" placeholder="YOUR NAME" autocomplete="name" aria-label="Your name">
    <div id="weeklyOptions" class="brand-options"></div>
-
-   <button id="submitGame"
-           class="game-submit"
-           type="button"
-           disabled>
-    SUBMIT ANSWER
-   </button>
-
-   <p id="gameMessage" class="game-message" aria-live="polite">
-    LOADING WEEKLY CHALLENGE...
-   </p>
-
+   <button id="submitGame" class="game-submit" type="button" disabled>SUBMIT ANSWER</button>
+   <p id="gameMessage" class="game-message" aria-live="polite">LOADING WEEKLY CHALLENGE...</p>
    <div class="game-description">
     <p id="challengeWinners">MAXIMUM 6 WINNERS</p>
     <p id="challengeDiscount">15% DISCOUNT</p>
    </div>
-
    <div id="winnerCard" class="winner-card">
-    <h3 data-en="CONGRATULATIONS!"
-        data-ar="تهانينا!">
-     CONGRATULATIONS!
-    </h3>
-
-    <p data-en="YOU WON A 15% DISCOUNT"
-       data-ar="لقد ربحت خصماً بنسبة 15%">
-     YOU WON A 15% DISCOUNT
-    </p>
-
+    <h3 data-en="CONGRATULATIONS!" data-ar="تهانينا!">CONGRATULATIONS!</h3>
+    <p data-en="YOU WON A 15% DISCOUNT" data-ar="لقد ربحت خصماً بنسبة 15%">YOU WON A 15% DISCOUNT</p>
     <span id="winnerCode" class="winner-code"></span>
-
-    <button id="copyWinnerCode" class="copy-code" type="button">
-     COPY DISCOUNT CODE
-    </button>
+    <button id="copyWinnerCode" class="copy-code" type="button">COPY DISCOUNT CODE</button>
    </div>
-
   </div>
  </div>
 </section>
- 
- 
+
 <!-- COLLECTION -->
 <section class="products" id="products">
  <div class="section">
-
-  <h2 class="section-heading"
-      data-en="OUR COLLECTION"
-      data-ar="مجموعتنا">
-   OUR COLLECTION
-  </h2>
-
-  <p class="section-intro"
-     data-en="New pieces will appear here. Each product space is ready for its photo, name and price."
-     data-ar="ستظهر القطع الجديدة هنا. كل مكان جاهز لصورة المنتج واسمه وسعره.">
-   New pieces will appear here. Each product space is ready for its photo, name and price.
+  <h2 class="section-heading" data-en="OUR COLLECTION" data-ar="مجموعتنا">OUR COLLECTION</h2>
+  <p class="section-intro" data-en="Discover our latest vintage and streetwear pieces." data-ar="اكتشف أحدث قطع الفينتيج والستريت وير لدينا.">
+   Discover our latest vintage and streetwear pieces.
   </p>
 
-  <!-- WINNER DISCOUNT -->
   <div id="collectionCoupon" class="collection-coupon">
-
-   <h3 data-en="YOUR WINNING REWARD"
-       data-ar="مكافأتك">
-    YOUR WINNING REWARD
-   </h3>
-
-   <p data-en="YOU HAVE UNLOCKED 15% OFF!"
-      data-ar="لقد حصلت على خصم بنسبة 15%!">
-    YOU HAVE UNLOCKED 15% OFF!
-   </p>
-
+   <h3 data-en="YOUR WINNING REWARD" data-ar="مكافأتك">YOUR WINNING REWARD</h3>
+   <p data-en="YOU HAVE UNLOCKED 15% OFF!" data-ar="لقد حصلت على خصم بنسبة 15%!">YOU HAVE UNLOCKED 15% OFF!</p>
    <strong id="collectionDiscountCode"></strong>
-
-   <p data-en="Use your personal discount code when ordering."
-      data-ar="استخدم كود الخصم الشخصي عند الطلب.">
+   <p data-en="Use your personal discount code when ordering." data-ar="استخدم كود الخصم الشخصي عند الطلب.">
     Use your personal discount code when ordering.
    </p>
-
-   <button id="collectionCopyCode" class="copy-code" type="button"
-           data-en="COPY MY CODE"
-           data-ar="انسخ الكود">
-    COPY MY CODE
-   </button>
-
+   <button id="collectionCopyCode" class="copy-code" type="button" data-en="COPY MY CODE" data-ar="انسخ الكود">COPY MY CODE</button>
   </div>
 
-  <div class="product-grid">
-
- <button class="product-slot" type="button" data-product="1">
-  <span class="plus">+</span>
-  <h3 data-en="YOUR NEXT PIECE" data-ar="قطعتك القادمة">YOUR NEXT PIECE</h3>
-  <p data-en="Product photo coming soon<br>Price: to be added"
-     data-ar="صورة المنتج قريباً<br>السعر: سيضاف لاحقاً">
-   Product photo coming soon<br>Price: to be added
-  </p>
- </button>
-
- <button class="product-slot" type="button" data-product="2">
-  <span class="plus">+</span>
-  <h3 data-en="YOUR NEXT PIECE" data-ar="قطعتك القادمة">YOUR NEXT PIECE</h3>
-  <p data-en="Product photo coming soon<br>Price: to be added"
-     data-ar="صورة المنتج قريباً<br>السعر: سيضاف لاحقاً">
-   Product photo coming soon<br>Price: to be added
-  </p>
- </button>
-
- <button class="product-slot" type="button" data-product="3">
-  <span class="plus">+</span>
-  <h3 data-en="YOUR NEXT PIECE" data-ar="قطعتك القادمة">YOUR NEXT PIECE</h3>
-  <p data-en="Product photo coming soon<br>Price: to be added"
-     data-ar="صورة المنتج قريباً<br>السعر: سيضاف لاحقاً">
-   Product photo coming soon<br>Price: to be added
-  </p>
- </button>
-
- <button class="product-slot" type="button" data-product="4">
-  <span class="plus">+</span>
-  <h3 data-en="YOUR NEXT PIECE" data-ar="قطعتك القادمة">YOUR NEXT PIECE</h3>
-  <p data-en="Product photo coming soon<br>Price: to be added"
-     data-ar="صورة المنتج قريباً<br>السعر: سيضاف لاحقاً">
-   Product photo coming soon<br>Price: to be added
-  </p>
- </button>
-
- <button class="product-slot" type="button" data-product="5">
-  <span class="plus">+</span>
-  <h3 data-en="YOUR NEXT PIECE" data-ar="قطعتك القادمة">YOUR NEXT PIECE</h3>
-  <p data-en="Product photo coming soon<br>Price: to be added"
-     data-ar="صورة المنتج قريباً<br>السعر: سيضاف لاحقاً">
-   Product photo coming soon<br>Price: to be added
-  </p>
- </button>
-
- <button class="product-slot" type="button" data-product="6">
-  <span class="plus">+</span>
-  <h3 data-en="YOUR NEXT PIECE" data-ar="قطعتك القادمة">YOUR NEXT PIECE</h3>
-  <p data-en="Product photo coming soon<br>Price: to be added"
-     data-ar="صورة المنتج قريباً<br>السعر: سيضاف لاحقاً">
-   Product photo coming soon<br>Price: to be added
-  </p>
- </button>
-
+  <!-- Products are loaded automatically from Supabase -->
+  <div class="product-grid" id="productGrid">
+   <p class="product-empty" id="productsLoading">LOADING COLLECTION...</p>
   </div>
  </div>
 </section>
@@ -638,13 +403,9 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
 <!-- PRODUCT DETAILS WINDOW -->
 <div class="product-modal" id="productModal" aria-hidden="true">
  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-
-  <button class="modal-close" id="modalClose" type="button"
-          aria-label="Close">×</button>
-
+  <button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button>
   <div class="product-gallery">
-   <button class="gallery-main" id="galleryMain" type="button"
-           aria-label="Enlarge main product photo">
+   <button class="gallery-main" id="galleryMain" type="button" aria-label="Enlarge main product photo">
     <div class="photo-placeholder">
      <span class="placeholder-plus">+</span>
      <small>PRODUCT PHOTO COMING SOON</small>
@@ -652,95 +413,60 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
    </button>
    <div class="gallery-thumbnails" id="galleryThumbnails"></div>
   </div>
-
-  <p class="eyebrow"
-     data-en="ANOTHER WORLD COLLECTION"
-     data-ar="مجموعة عالم آخر">ANOTHER WORLD COLLECTION</p>
-
-  <h2 id="modalTitle"
-      data-en="YOUR NEXT PIECE"
-      data-ar="قطعتك القادمة">YOUR NEXT PIECE</h2>
-
-  <p class="modal-description"
-     data-en="This product will be available soon. Stay tuned for its photo and full details."
-     data-ar="هذا المنتج سيكون متوفراً قريباً. ترقبوا صورته وجميع تفاصيله.">
-   This product will be available soon. Stay tuned for its photo and full details.
-  </p>
-
-  <div class="modal-price"
-       data-en="PRICE: COMING SOON"
-       data-ar="السعر: قريباً">PRICE: COMING SOON</div>
-
-  <a class="modal-whatsapp"
-     href="https://wa.me/213791237069"
-     target="_blank"
-     rel="noopener"
-     data-en="ASK ABOUT THIS PIECE"
-     data-ar="استفسر عن هذه القطعة">
+  <p class="eyebrow" data-en="ANOTHER WORLD COLLECTION" data-ar="مجموعة عالم آخر">ANOTHER WORLD COLLECTION</p>
+  <h2 id="modalTitle">YOUR NEXT PIECE</h2>
+  <p class="modal-description" id="modalDescription"></p>
+  <div class="modal-price" id="modalPrice"></div>
+  <a class="modal-whatsapp" id="modalWhatsapp" href="https://wa.me/213791237069" target="_blank" rel="noopener" data-en="ASK ABOUT THIS PIECE" data-ar="استفسر عن هذه القطعة">
    ASK ABOUT THIS PIECE
   </a>
-
  </div>
 </div>
 
 <!-- FULL SCREEN IMAGE VIEWER -->
 <div class="image-viewer" id="imageViewer" aria-hidden="true">
  <div class="viewer-content" id="viewerContent">
-  <button class="viewer-close" id="viewerClose" type="button"
-          aria-label="Close enlarged photo">×</button>
+  <button class="viewer-close" id="viewerClose" type="button" aria-label="Close enlarged photo">×</button>
   <div class="photo-placeholder">
    <span class="placeholder-plus">+</span>
-   <small>PRODUCT PHOTO COMING SOON</small>
+   <small>PRODUCT PHOTO</small>
   </div>
  </div>
 </div>
 
 <!-- CONTACT -->
 <section class="section contact" id="contact">
- <h2 class="section-heading"
-     data-en="LET'S TALK"
-     data-ar="لنتحدث">LET'S TALK</h2>
-
- <p data-en="Found a piece you like? Contact us on WhatsApp."
-    data-ar="وجدت قطعة أعجبتك؟ تواصل معنا عبر واتساب.">
+ <h2 class="section-heading" data-en="LET'S TALK" data-ar="لنتحدث">LET'S TALK</h2>
+ <p data-en="Found a piece you like? Contact us on WhatsApp." data-ar="وجدت قطعة أعجبتك؟ تواصل معنا عبر واتساب.">
   Found a piece you like? Contact us on WhatsApp.
  </p>
-
- <a class="button"
-    href="https://wa.me/213791237069"
-    data-en="CONTACT ON WHATSAPP"
-    data-ar="تواصل عبر واتساب">CONTACT ON WHATSAPP</a>
-
+ <a class="button" href="https://wa.me/213791237069" data-en="CONTACT ON WHATSAPP" data-ar="تواصل عبر واتساب">CONTACT ON WHATSAPP</a>
  <p>
-  <a href="https://www.instagram.com/another_w00rld/"
-     target="_blank" rel="noopener"
-     data-en="FOLLOW US ON INSTAGRAM"
-     data-ar="تابعنا على إنستغرام">FOLLOW US ON INSTAGRAM</a>
+  <a href="https://www.instagram.com/another_w00rld/" target="_blank" rel="noopener" data-en="FOLLOW US ON INSTAGRAM" data-ar="تابعنا على إنستغرام">FOLLOW US ON INSTAGRAM</a>
  </p>
 </section>
 </main>
 
-<footer
- data-en="ANOTHER WORLD © 2026 — VINTAGE STREETWEAR"
- data-ar="عالم آخر © 2026 — ملابس فينتيج">
+<footer data-en="ANOTHER WORLD © 2026 — VINTAGE STREETWEAR" data-ar="عالم آخر © 2026 — ملابس فينتيج">
  ANOTHER WORLD © 2026 — VINTAGE STREETWEAR
 </footer>
 
 <script>
-
 /* ==========================================
    ANOTHER WORLD - COMPLETE JAVASCRIPT
-   Language + Theme + Product Gallery
-   Weekly Challenge + Supabase
+   Supabase Products + Gallery + Game
 ========================================== */
 
 /* GENERAL ELEMENTS */
-
 const languageBtn = document.getElementById("languageBtn");
 const themeBtn = document.getElementById("themeBtn");
 
 const productModal = document.getElementById("productModal");
 const modalClose = document.getElementById("modalClose");
+const modalTitle = document.getElementById("modalTitle");
+const modalDescription = document.getElementById("modalDescription");
+const modalPrice = document.getElementById("modalPrice");
+const modalWhatsapp = document.getElementById("modalWhatsapp");
 
 const imageViewer = document.getElementById("imageViewer");
 const viewerContent = document.getElementById("viewerContent");
@@ -748,6 +474,7 @@ const viewerClose = document.getElementById("viewerClose");
 
 const galleryMain = document.getElementById("galleryMain");
 const galleryThumbnails = document.getElementById("galleryThumbnails");
+const productGrid = document.getElementById("productGrid");
 
 const gameName = document.getElementById("gameName");
 const submitGame = document.getElementById("submitGame");
@@ -767,25 +494,18 @@ const challengeWinners = document.getElementById("challengeWinners");
 const challengeDiscount = document.getElementById("challengeDiscount");
 
 /* SUPABASE CONFIGURATION */
-
-const SUPABASE_URL =
- "https://nukiuulwmlbbfyzyntly.supabase.co";
-
-const SUPABASE_ANON_KEY =
- "sb_publishable_L6U6tQFbHLbdyqOPHa745g_iYEDK-tz";
-
-const GAME_FUNCTION =
- SUPABASE_URL + "/functions/v1/submit-weekly-challenge-attempt";
+const SUPABASE_URL = "https://nukiuulwmlbbfyzyntly.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_L6U6tQFbHLbdyqOPHa745g_iYEDK-tz";
+const GAME_FUNCTION = SUPABASE_URL + "/functions/v1/submit-weekly-challenge-attempt";
 
 /* GENERAL STATE */
+let currentLanguage = localStorage.getItem("aw-language") || "en";
+let isLight = localStorage.getItem("aw-theme") === "light";
 
-let currentLanguage =
- localStorage.getItem("aw-language") || "en";
-
-let isLight =
- localStorage.getItem("aw-theme") === "light";
-
-let currentProduct = 1;
+let productsData = [];
+let currentProduct = null;
+let currentGalleryImages = [];
+let currentMainImage = "";
 
 let activeChallenge = null;
 let selectedAnswer = "";
@@ -795,1101 +515,792 @@ let gameBusy = false;
 /* ==========================================
    LANGUAGE SYSTEM
 ========================================== */
-
-function updateLanguage(){
-
+ function updateLanguage(){
  document.documentElement.lang = currentLanguage;
-
- document.body.dir =
-  currentLanguage === "ar" ? "rtl" : "ltr";
+ document.body.dir = currentLanguage === "ar" ? "rtl" : "ltr";
 
  document.querySelectorAll("[data-en][data-ar]").forEach(function(element){
-
-  element.innerHTML =
-   element.dataset[currentLanguage];
-
+  element.innerHTML = element.dataset[currentLanguage];
  });
 
- if(languageBtn){
+ languageBtn.textContent = currentLanguage === "en" ? "AR العربية" : "EN English";
 
-  languageBtn.textContent =
-   currentLanguage === "en"
-    ? "AR العربية"
-    : "EN English";
+ gameName.placeholder = currentLanguage === "en" ? "YOUR NAME" : "أدخل اسمك";
+ gameName.setAttribute("aria-label", currentLanguage === "en" ? "Your name" : "اسمك");
 
+ if(activeChallenge){
+  weeklyQuestion.textContent = activeChallenge.question || "";
+  if(gameWinner) showWinner(gameWinner,false);
+  else updateChallengeInstructions();
  }
 
- if(gameName){
-
-  gameName.placeholder =
-   currentLanguage === "en"
-    ? "YOUR NAME"
-    : "أدخل اسمك";
-
-  gameName.setAttribute(
-   "aria-label",
-   currentLanguage === "en" ? "Your name" : "اسمك"
-  );
-
- }
-
- if(submitGame){
-
-  submitGame.textContent =
-   currentLanguage === "en"
-    ? "SUBMIT ANSWER"
-    : "إرسال الإجابة";
-
+ if(gameWinner){
+  winnerCode.textContent = gameWinner.discount_code;
+  collectionDiscountCode.textContent = gameWinner.discount_code;
  }
 
  updateThemeButton();
 
- if(productModal.classList.contains("active")){
+ if(productsData.length) renderProducts();
 
+ if(currentProduct && productModal.classList.contains("active")){
   loadGallery(currentProduct);
-
  }
-
- if(activeChallenge){
-
-  weeklyQuestion.textContent =
-   activeChallenge.question || "";
-
-  if(gameWinner){
-
-   showWinner(gameWinner,false);
-
-  }
-
- }
-
- if(!gameWinner && activeChallenge){
-
-  updateChallengeInstructions();
-
- }
-
- if(gameWinner){
-
-  winnerCode.textContent = gameWinner.discount_code;
-
-  collectionDiscountCode.textContent =
-   gameWinner.discount_code;
-
- }
-
 }
 
 /* ==========================================
    THEME SYSTEM
 ========================================== */
-
-function updateThemeButton(){
-
- if(!themeBtn) return;
-
+ function updateThemeButton(){
  themeBtn.textContent = isLight
-
-  ? (currentLanguage === "en"
-     ? "🌙 DARK MODE"
-     : "🌙 الوضع الداكن")
-
-  : (currentLanguage === "en"
-     ? "☀️ LIGHT MODE"
-     : "☀️ الوضع الفاتح");
-
+  ? (currentLanguage === "en" ? "🌙 DARK MODE" : "🌙 الوضع الداكن")
+  : (currentLanguage === "en" ? "☀️ LIGHT MODE" : "☀️ الوضع الفاتح");
 }
 
 function updateTheme(){
+ document.body.classList.toggle("light-mode",isLight);
 
- document.body.classList.toggle(
-  "light-mode",
-  isLight
- );
+ const themeMeta = document.querySelector('meta[name="theme-color"]');
+ if(themeMeta) themeMeta.setAttribute("content",isLight ? "#f3ede2" : "#11100e");
 
- const themeMeta =
-  document.querySelector('meta[name="theme-color"]');
-
- if(themeMeta){
-
-  themeMeta.setAttribute(
-   "content",
-   isLight ? "#f3ede2" : "#11100e"
-  );
-
- }
-
- localStorage.setItem(
-  "aw-theme",
-  isLight ? "light" : "dark"
- );
-
+ localStorage.setItem("aw-theme",isLight ? "light" : "dark");
  updateThemeButton();
-
 }
 
-/* LANGUAGE BUTTON */
-
 languageBtn.addEventListener("click",function(){
-
- currentLanguage =
-  currentLanguage === "en" ? "ar" : "en";
-
- localStorage.setItem(
-  "aw-language",
-  currentLanguage
- );
-
+ currentLanguage = currentLanguage === "en" ? "ar" : "en";
+ localStorage.setItem("aw-language",currentLanguage);
  updateLanguage();
-
 });
 
-/* THEME BUTTON */
-
 themeBtn.addEventListener("click",function(){
-
  isLight = !isLight;
-
  updateTheme();
-
 });
 
 /* ==========================================
-   PRODUCT GALLERY
+   PRODUCT MANAGEMENT - SUPABASE
 ========================================== */
-
-const photoNames = [
-
- {key:"front",en:"FRONT VIEW",ar:"الصورة الأمامية"},
- {key:"back",en:"BACK VIEW",ar:"الصورة الخلفية"},
- {key:"side",en:"SIDE VIEW",ar:"الصورة الجانبية"},
- {key:"detail",en:"DETAIL VIEW",ar:"صورة التفاصيل"}
-
-];
-
-function photoPath(product,key){
-
- return "products/product-" +
-  product + "-" + key + ".jpg";
-
-}
-
-function makePlaceholder(label){
-
+ function makePlaceholder(label){
  const box = document.createElement("div");
-
  box.className = "photo-placeholder";
 
  const plus = document.createElement("span");
-
  plus.className = "placeholder-plus";
  plus.textContent = "+";
 
  const small = document.createElement("small");
-
  small.textContent = label;
 
  box.append(plus,small);
-
  return box;
-
 }
 
-function makePhoto(product,photo){
+function getProductImages(product){
+ if(!Array.isArray(product.images)) return [];
 
- const img = document.createElement("img");
-
- img.src = photoPath(product,photo.key);
-
- img.alt = currentLanguage === "en"
-  ? photo.en
-  : photo.ar;
-
- img.onerror = function(){
-
-  if(img.parentNode){
-
-   img.replaceWith(
-    makePlaceholder(
-     currentLanguage === "ar" ? photo.ar : photo.en
-    )
-   );
-
-  }
-
- };
-
- return img;
-
+ return product.images.filter(function(url){
+  return typeof url === "string" && url.trim() !== "";
+ });
 }
 
-/* ENLARGE PRODUCT PHOTO */
+function formatProductPrice(price){
+ if(price === null || price === undefined || price === ""){
+  return currentLanguage === "ar" ? "السعر غير محدد" : "PRICE NOT SET";
+ }
 
-function openViewer(product,photo){
+ const number = Number(price);
 
- viewerContent.querySelectorAll(
-  "img,.photo-placeholder"
- ).forEach(el => el.remove());
+ if(!Number.isFinite(number)) return String(price);
 
- const img = document.createElement("img");
-
- img.src = photoPath(product,photo.key);
-
- img.alt = currentLanguage === "en"
-  ? photo.en
-  : photo.ar;
-
- img.onerror = function(){
-
-  if(img.parentNode){
-
-   img.replaceWith(
-    makePlaceholder(
-     currentLanguage === "ar" ? photo.ar : photo.en
-    )
-   );
-
-  }
-
- };
-
- viewerContent.appendChild(img);
-
- imageViewer.classList.add("active");
-
- imageViewer.setAttribute("aria-hidden","false");
-
- document.body.style.overflow = "hidden";
-
- viewerClose.focus();
-
+ return new Intl.NumberFormat(
+  currentLanguage === "ar" ? "ar-DZ" : "en-US"
+ ).format(number) + " DZD";
 }
 
-/* LOAD PRODUCT GALLERY */
+/* LOAD PRODUCTS FROM SUPABASE */
+async function loadProducts(){
+ productGrid.replaceChildren();
 
-function loadGallery(product){
+ const loading = document.createElement("p");
+ loading.className = "product-empty";
+ loading.textContent = currentLanguage === "ar"
+  ? "جارٍ تحميل المنتجات..."
+  : "LOADING COLLECTION...";
+ productGrid.appendChild(loading);
 
- currentProduct = product;
+ try{
+  const url = SUPABASE_URL +
+   "/rest/v1/products?select=id,name,price,description,sizes,images,status,is_visible,created_at" +
+   "&is_visible=eq.true&order=created_at.desc";
 
- galleryMain.innerHTML = "";
-
- galleryMain.appendChild(
-  makePhoto(product,photoNames[0])
- );
-
- galleryMain.onclick = function(){
-
-  openViewer(product,photoNames[0]);
-
- };
-
- galleryThumbnails.innerHTML = "";
-
- photoNames.forEach(function(photo){
-
-  const button = document.createElement("button");
-
-  button.type = "button";
-
-  button.className = "gallery-thumb";
-
-  button.setAttribute(
-   "aria-label",
-   (currentLanguage === "en" ? photo.en : photo.ar)
-    + " - enlarge photo"
-  );
-
-  button.appendChild(
-   makePhoto(product,photo)
-  );
-
-  button.addEventListener("click",function(){
-
-   openViewer(product,photo);
-
+  const response = await fetch(url,{
+   method:"GET",
+   headers:{
+    "apikey":SUPABASE_ANON_KEY,
+    "Authorization":"Bearer " + SUPABASE_ANON_KEY,
+    "Accept":"application/json"
+   },
+   cache:"no-store"
   });
 
-  galleryThumbnails.appendChild(button);
+  if(!response.ok){
+   const errorText = await response.text();
+   throw new Error("Products request failed: " + response.status + " " + errorText);
+  }
 
+  const data = await response.json();
+
+  productsData = Array.isArray(data) ? data : [];
+
+  renderProducts();
+
+ }catch(error){
+  console.error("Products loading error:",error);
+
+  productGrid.replaceChildren();
+
+  const message = document.createElement("p");
+  message.className = "product-empty";
+  message.textContent = currentLanguage === "ar"
+   ? "تعذر تحميل المنتجات. يرجى المحاولة لاحقاً."
+   : "UNABLE TO LOAD PRODUCTS. PLEASE TRY AGAIN LATER.";
+
+  productGrid.appendChild(message);
+ }
+}
+
+/* RENDER PRODUCT CARDS */
+function renderProducts(){
+ productGrid.replaceChildren();
+
+ if(!productsData.length){
+  const empty = document.createElement("p");
+  empty.className = "product-empty";
+  empty.textContent = currentLanguage === "ar"
+   ? "لا توجد منتجات متاحة حالياً."
+   : "NO PRODUCTS AVAILABLE RIGHT NOW.";
+  productGrid.appendChild(empty);
+  return;
+ }
+
+ productsData.forEach(function(product){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "product-slot";
+  card.setAttribute("aria-label",product.name || "View product");
+
+  const images = getProductImages(product);
+
+  if(images.length){
+   const image = document.createElement("img");
+   image.className = "product-card-image";
+   image.src = images[0];
+   image.alt = product.name || "Product";
+   image.loading = "lazy";
+
+   image.onerror = function(){
+    image.style.display = "none";
+   };
+
+   card.appendChild(image);
+  }else{
+   const placeholder = document.createElement("div");
+   placeholder.className = "product-loading-image";
+   placeholder.textContent = currentLanguage === "ar"
+    ? "لا توجد صورة"
+    : "NO IMAGE";
+   card.appendChild(placeholder);
+  }
+
+  const info = document.createElement("div");
+  info.className = "product-card-info";
+
+  const name = document.createElement("h3");
+  name.textContent = product.name || (
+   currentLanguage === "ar" ? "منتج" : "PRODUCT"
+  );
+
+  const price = document.createElement("p");
+  price.className = "product-card-price";
+  price.textContent = formatProductPrice(product.price);
+
+  info.append(name,price);
+  card.appendChild(info);
+
+  card.addEventListener("click",function(){
+   openProductDetails(product);
+  });
+ productGrid.appendChild(card);
  });
-
 }
 
 /* OPEN PRODUCT DETAILS */
+function openProductDetails(product){
+ currentProduct = product;
 
-document.querySelectorAll(".product-slot").forEach(function(slot){
+ loadGallery(product);
 
- slot.addEventListener("click",function(){
+ productModal.classList.add("active");
+ productModal.setAttribute("aria-hidden","false");
 
-  const product = Number(slot.dataset.product);
+ document.body.style.overflow = "hidden";
+ modalClose.focus();
+}
 
-  loadGallery(product);
+/* LOAD PRODUCT GALLERY FROM SUPABASE IMAGES */
+function loadGallery(product){
+ if(!product) return;
 
-  productModal.classList.add("active");
+ currentProduct = product;
+ currentGalleryImages = getProductImages(product);
 
-  productModal.setAttribute("aria-hidden","false");
+ modalTitle.textContent = product.name || "PRODUCT";
 
-  document.body.style.overflow = "hidden";
+ modalDescription.textContent = product.description ||
+  (currentLanguage === "ar"
+   ? "تواصل معنا لمعرفة المزيد عن هذه القطعة."
+   : "Contact us to learn more about this piece.");
 
-  modalClose.focus();
+ modalPrice.textContent = currentLanguage === "ar"
+  ? "السعر: " + formatProductPrice(product.price)
+  : "PRICE: " + formatProductPrice(product.price);
 
+ const whatsappMessage = encodeURIComponent(
+  "Hello, I am interested in: " + (product.name || "this product")
+ );
+
+ modalWhatsapp.href = "https://wa.me/213791237069?text=" + whatsappMessage;
+
+ galleryMain.replaceChildren();
+ galleryThumbnails.replaceChildren();
+
+ if(!currentGalleryImages.length){
+  galleryMain.appendChild(makePlaceholder(
+   currentLanguage === "ar" ? "لا توجد صور لهذا المنتج" : "NO PRODUCT PHOTOS"
+  ));
+  currentMainImage = "";
+  galleryMain.onclick = null;
+  return;
+ }
+
+ currentMainImage = currentGalleryImages[0];
+ showMainProductImage(currentMainImage);
+
+ currentGalleryImages.forEach(function(imageUrl,index){
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "gallery-thumb";
+  button.setAttribute(
+   "aria-label",
+   (currentLanguage === "ar" ? "الصورة " : "Photo ") + (index + 1)
+  );
+
+  const image = document.createElement("img");
+  image.src = imageUrl;
+  image.alt = (product.name || "Product") + " - " + (index + 1);
+  image.loading = "lazy";
+
+  image.onerror = function(){
+   image.replaceWith(makePlaceholder(
+    currentLanguage === "ar" ? "الصورة غير متاحة" : "IMAGE UNAVAILABLE"
+   ));
+  };
+
+  button.appendChild(image);
+
+  button.addEventListener("click",function(){
+   currentMainImage = imageUrl;
+   showMainProductImage(imageUrl);
+  });
+
+  galleryThumbnails.appendChild(button);
  });
+}
 
-});
+/* SHOW SELECTED MAIN IMAGE */
+function showMainProductImage(imageUrl){
+ galleryMain.replaceChildren();
 
-/* CLOSE PRODUCT DETAILS */
+ const image = document.createElement("img");
+ image.src = imageUrl;
+ image.alt = currentProduct ? currentProduct.name : "Product";
 
+ image.onerror = function(){
+  image.replaceWith(makePlaceholder(
+   currentLanguage === "ar" ? "تعذر تحميل الصورة" : "IMAGE COULD NOT LOAD"
+  ));
+ };
+
+ galleryMain.appendChild(image);
+
+ galleryMain.onclick = function(){
+  openViewer(imageUrl);
+ } ;
+                              }
+ /* CLOSE PRODUCT DETAILS */
 function closeProductModal(){
-
  productModal.classList.remove("active");
-
  productModal.setAttribute("aria-hidden","true");
+ currentProduct = null;
 
- document.body.style.overflow = "";
-
+ if(!imageViewer.classList.contains("active")){
+  document.body.style.overflow = "";
+ }
 }
 
 modalClose.addEventListener("click",closeProductModal);
 
 productModal.addEventListener("click",function(event){
-
- if(event.target === productModal){
-
-  closeProductModal();
-
- }
-
+ if(event.target === productModal) closeProductModal();
 });
 
 /* ==========================================
    FULL SCREEN IMAGE VIEWER
 ========================================== */
+ function openViewer(imageUrl){
+ viewerContent.querySelectorAll("img,.photo-placeholder").forEach(function(el){
+  el.remove();
+ });
+
+ const image = document.createElement("img");
+ image.src = imageUrl;
+ image.alt = currentProduct ? currentProduct.name : "Product image";
+
+ image.onerror = function(){
+  image.replaceWith(makePlaceholder(
+   currentLanguage === "ar" ? "تعذر تحميل الصورة" : "IMAGE COULD NOT LOAD"
+  ));
+ };
+
+ viewerContent.appendChild(image);
+
+ imageViewer.classList.add("active");
+ imageViewer.setAttribute("aria-hidden","false");
+ document.body.style.overflow = "hidden";
+ viewerClose.focus();
+}
 
 function closeViewer(){
-
  imageViewer.classList.remove("active");
-
  imageViewer.setAttribute("aria-hidden","true");
 
  if(!productModal.classList.contains("active")){
-
   document.body.style.overflow = "";
-
  }else{
-
   document.body.style.overflow = "hidden";
-
  }
-
 }
 
 viewerClose.addEventListener("click",closeViewer);
 
 imageViewer.addEventListener("click",function(event){
-
- if(event.target === imageViewer){
-
-  closeViewer();
-
- }
-
+ if(event.target === imageViewer) closeViewer();
 });
 
-/* ESCAPE KEY */
-
 document.addEventListener("keydown",function(event){
-
  if(event.key === "Escape"){
-
   if(imageViewer.classList.contains("active")){
-
    closeViewer();
-
   }else if(productModal.classList.contains("active")){
-
    closeProductModal();
-
   }
-
  }
-
 });
 
 /* ==========================================
    WEEKLY CHALLENGE
 ========================================== */
-
-function setGameMessage(message,type="normal"){
-
+ function setGameMessage(message,type="normal"){
  gameMessage.textContent = message;
-
  gameMessage.style.color =
   type === "error" ? "#d98a78" :
   type === "success" ? "#65c78b" :
   "var(--muted)";
-
 }
 
-/* CHALLENGE INSTRUCTIONS */
-
 function updateChallengeInstructions(){
-
- if(gameWinner){
-
-  return;
-
- }
-
- if(gameBusy){
-
-  return;
-
- }
-
- if(!activeChallenge){
-
-  return;
-
- }
+ if(gameWinner || gameBusy || !activeChallenge) return;
 
  if(!selectedAnswer){
-
-  setGameMessage(
-   currentLanguage === "en"
-    ? "ENTER YOUR NAME AND CHOOSE AN ANSWER."
-    : "أدخل اسمك واختر إجابتك."
-  );
-
+  setGameMessage(currentLanguage === "en"
+   ? "ENTER YOUR NAME AND CHOOSE AN ANSWER."
+   : "أدخل اسمك واختر إجابتك.");
  }else{
-
-  setGameMessage(
-   currentLanguage === "en"
-    ? "YOUR ANSWER IS SELECTED. SUBMIT WHEN READY."
-    : "تم اختيار إجابتك. اضغط على إرسال عندما تكون مستعداً."
-  );
-
+  setGameMessage(currentLanguage === "en"
+   ? "YOUR ANSWER IS SELECTED. SUBMIT WHEN READY."
+   : "تم اختيار إجابتك. اضغط على إرسال عندما تكون مستعداً.");
  }
-
 }
 
 /* LOAD ACTIVE WEEKLY CHALLENGE */
-
 async function loadWeeklyChallenge(){
-
  submitGame.disabled = true;
 
- weeklyQuestion.textContent =
-  currentLanguage === "en"
-   ? "LOADING CHALLENGE..."
-   : "جارٍ تحميل التحدي...";
+ weeklyQuestion.textContent = currentLanguage === "en"
+  ? "LOADING CHALLENGE..."
+  : "جارٍ تحميل التحدي...";
 
  weeklyOptions.replaceChildren();
-
  challengeStatus.textContent = "";
 
- setGameMessage(
-  currentLanguage === "en"
-   ? "LOADING WEEKLY CHALLENGE..."
-   : "جارٍ تحميل التحدي الأسبوعي..."
- );
+ setGameMessage(currentLanguage === "en"
+  ? "LOADING WEEKLY CHALLENGE..."
+  : "جارٍ تحميل التحدي الأسبوعي...");
 
  try{
-
   const response = await fetch(
-
-   SUPABASE_URL +
-   "/rest/v1/rpc/get_active_weekly_challenge",
-
+   SUPABASE_URL + "/rest/v1/rpc/get_active_weekly_challenge",
    {
-
     method:"POST",
-
     headers:{
-
      "apikey":SUPABASE_ANON_KEY,
-
      "Authorization":"Bearer " + SUPABASE_ANON_KEY,
-
      "Content-Type":"application/json"
-
     },
-
     body:"{}",
-
     cache:"no-store"
-
    }
-
   );
 
-  if(!response.ok){
-
-   throw new Error(
-    "Could not load the weekly challenge."
-   );
-
-  }
+  if(!response.ok) throw new Error("Could not load the weekly challenge.");
 
   let challenge = await response.json();
 
-  /* SUPPORT SINGLE OBJECT OR ARRAY RESPONSE */
-
-  if(Array.isArray(challenge)){
-
-   challenge = challenge[0] || null;
-
-  }
+  if(Array.isArray(challenge)) challenge = challenge[0] || null;
 
   if(!challenge || !challenge.id){
-
    activeChallenge = null;
 
-   weeklyQuestion.textContent =
-    currentLanguage === "en"
-     ? "NO ACTIVE CHALLENGE"
-     : "لا يوجد تحدٍ نشط حالياً";
+   weeklyQuestion.textContent = currentLanguage === "en"
+    ? "NO ACTIVE CHALLENGE"
+    : "لا يوجد تحدٍ نشط حالياً";
 
    weeklyOptions.replaceChildren();
-
    challengeStatus.textContent = "";
 
-   setGameMessage(
-    currentLanguage === "en"
-     ? "THE NEXT CHALLENGE WILL BE ANNOUNCED SOON."
-     : "سيتم الإعلان عن التحدي القادم قريباً."
-   );
+   setGameMessage(currentLanguage === "en"
+    ? "THE NEXT CHALLENGE WILL BE ANNOUNCED SOON."
+    : "سيتم الإعلان عن التحدي القادم قريباً.");
 
    return;
-
   }
 
   activeChallenge = challenge;
-
   selectedAnswer = "";
-
   gameWinner = null;
-
   gameBusy = false;
 
   gameName.disabled = false;
-
   gameName.value = "";
 
   winnerCard.classList.remove("active");
-
   collectionCoupon.classList.remove("active");
 
   winnerCode.textContent = "";
-
   collectionDiscountCode.textContent = "";
 
-  weeklyQuestion.textContent =
-   challenge.question || "";
+  weeklyQuestion.textContent = challenge.question || "";
 
-  const winnersCount =
-   Number(challenge.winners_count || 0);
+  const winnersCount = Number(challenge.winners_count || 0);
+  const maxWinners = Number(challenge.max_winners || 6);
+  const discountPercent = Number(challenge.discount_percent || 15);
 
-  const maxWinners =
-   Number(challenge.max_winners || 6);
+  challengeWinners.textContent = currentLanguage === "en"
+   ? "WINNERS: " + winnersCount + " / " + maxWinners
+   : "الفائزون: " + winnersCount + " / " + maxWinners;
 
-  const discountPercent =
-   Number(challenge.discount_percent || 15);
+  challengeDiscount.textContent = currentLanguage === "en"
+   ? "DISCOUNT: " + discountPercent + "%"
+   : "الخصم: " + discountPercent + "%";
 
-  challengeWinners.textContent =
-   currentLanguage === "en"
-    ? "WINNERS: " + winnersCount + " / " + maxWinners
-    : "الفائزون: " + winnersCount + " / " + maxWinners;
-
-  challengeDiscount.textContent =
-   currentLanguage === "en"
-    ? "DISCOUNT: " + discountPercent + "%"
-    : "الخصم: " + discountPercent + "%";
-
-  const options = Array.isArray(challenge.options)
-   ? challenge.options
-   : [];
-
+  const options = Array.isArray(challenge.options) ? challenge.options : [];
   weeklyOptions.replaceChildren();
 
   options.forEach(function(option){
-
    const button = document.createElement("button");
-
    button.type = "button";
-
    button.className = "brand-option";
-
    button.textContent = option.text;
-
    button.dataset.optionId = option.id;
 
    button.addEventListener("click",function(){
-
     if(gameBusy || gameWinner) return;
 
     weeklyOptions.querySelectorAll("button").forEach(function(item){
-
      item.classList.remove("selected");
-
     });
 
     button.classList.add("selected");
-
     selectedAnswer = option.id;
-
     submitGame.disabled = false;
-
     updateChallengeInstructions();
-
    });
 
    weeklyOptions.appendChild(button);
-
   });
 
   if(options.length < 2){
-
-   throw new Error(
-    "The challenge does not have enough answer options."
-   );
-
+   throw new Error("The challenge does not have enough answer options.");
   }
 
-  /* CHECK OPENING AND CLOSING TIMES */
-
   const now = Date.now();
-
-  const opens = challenge.opens_at
-   ? new Date(challenge.opens_at).getTime()
-   : null;
-
-  const closes = challenge.closes_at
-   ? new Date(challenge.closes_at).getTime()
-   : null;
+  const opens = challenge.opens_at ? new Date(challenge.opens_at).getTime() : null;
+  const closes = challenge.closes_at ? new Date(challenge.closes_at).getTime() : null;
 
   if(opens && now < opens){
+   challengeStatus.textContent = currentLanguage === "en"
+    ? "CHALLENGE OPENS: " + new Date(opens).toLocaleString()
+    : "موعد بداية التحدي: " + new Date(opens).toLocaleString();
 
-   challengeStatus.textContent =
-    currentLanguage === "en"
-     ? "CHALLENGE OPENS: " + new Date(opens).toLocaleString()
-     : "موعد بداية التحدي: " + new Date(opens).toLocaleString();
-
-   setGameMessage(
-    currentLanguage === "en"
-     ? "THIS CHALLENGE HAS NOT OPENED YET."
-     : "لم يبدأ التحدي بعد."
-   );
+   setGameMessage(currentLanguage === "en"
+    ? "THIS CHALLENGE HAS NOT OPENED YET."
+    : "لم يبدأ التحدي بعد.");
 
    return;
-
   }
 
   if(closes && now >= closes){
+   challengeStatus.textContent = currentLanguage === "en"
+    ? "CHALLENGE CLOSED"
+    : "التحدي مغلق";
 
-   challengeStatus.textContent =
-    currentLanguage === "en"
-     ? "CHALLENGE CLOSED"
-     : "التحدي مغلق";
-
-   setGameMessage(
-    currentLanguage === "en"
-     ? "THIS CHALLENGE IS CLOSED."
-     : "انتهى هذا التحدي."
-   );
+   setGameMessage(currentLanguage === "en"
+    ? "THIS CHALLENGE IS CLOSED."
+    : "انتهى هذا التحدي.");
 
    return;
-
   }
 
-  challengeStatus.textContent =
-   currentLanguage === "en"
-    ? "CHOOSE YOUR ANSWER AND WIN!"
-    : "اختر إجابتك واربح!";
+  challengeStatus.textContent = currentLanguage === "en"
+   ? "CHOOSE YOUR ANSWER AND WIN!"
+   : "اختر إجابتك واربح!";
 
   updateChallengeInstructions();
-
   submitGame.disabled = true;
 
  }catch(error){
-
   console.error("Weekly challenge error:",error);
-
   activeChallenge = null;
-
   weeklyOptions.replaceChildren();
 
-  weeklyQuestion.textContent =
-   currentLanguage === "en"
-    ? "CHALLENGE UNAVAILABLE"
-    : "التحدي غير متاح";
+  weeklyQuestion.textContent = currentLanguage === "en"
+   ? "CHALLENGE UNAVAILABLE"
+   : "التحدي غير متاح";
 
   submitGame.disabled = true;
 
-  setGameMessage(
-   currentLanguage === "en"
-    ? "UNABLE TO LOAD THE CHALLENGE. PLEASE TRY AGAIN LATER."
-    : "تعذر تحميل التحدي. حاول لاحقاً.",
-   "error"
-  );
-
+  setGameMessage(currentLanguage === "en"
+   ? "UNABLE TO LOAD THE CHALLENGE. PLEASE TRY AGAIN LATER."
+   : "تعذر تحميل التحدي. حاول لاحقاً.",
+   "error");
  }
-
 }
 
 /* ==========================================
    DISPLAY WINNER
 ========================================== */
-
-function showWinner(data,scrollToWinner=false){
-
+ function showWinner(data,scrollToWinner=false){
  gameWinner = data;
 
  winnerCode.textContent = data.discount_code;
-
- collectionDiscountCode.textContent =
-  data.discount_code;
+ collectionDiscountCode.textContent = data.discount_code;
 
  winnerCard.classList.add("active");
-
  collectionCoupon.classList.add("active");
 
  submitGame.disabled = true;
 
  weeklyOptions.querySelectorAll("button").forEach(function(button){
-
   button.disabled = true;
-
  });
 
  gameName.value = data.name || gameName.value;
-
  gameName.disabled = true;
 
- setGameMessage(
-  currentLanguage === "en"
-   ? "CONGRATULATIONS! YOU WON A 15% DISCOUNT!"
-   : "تهانينا! لقد ربحت خصماً بنسبة 15%!",
-  "success"
- );
+ setGameMessage(currentLanguage === "en"
+  ? "CONGRATULATIONS! YOU WON A 15% DISCOUNT!"
+  : "تهانينا! لقد ربحت خصماً بنسبة 15%!",
+  "success");
 
  if(scrollToWinner){
-
-  winnerCard.scrollIntoView({
-
-   behavior:"smooth",
-
-   block:"center"
-
-  });
-
+  winnerCard.scrollIntoView({behavior:"smooth",block:"center"});
  }
-
 }
 
 /* ==========================================
    SUBMIT WEEKLY ANSWER
 ========================================== */
-
-submitGame.addEventListener("click",async function(){
-
- if(gameBusy || gameWinner || !activeChallenge){
-
-  return;
-
- }
+ submitGame.addEventListener("click",async function(){
+ if(gameBusy || gameWinner || !activeChallenge) return;
 
  const name = gameName.value.trim();
 
  if(!name){
-
-  setGameMessage(
-   currentLanguage === "en"
-    ? "PLEASE ENTER YOUR NAME."
-    : "يرجى إدخال اسمك.",
-   "error"
-  );
+  setGameMessage(currentLanguage === "en"
+   ? "PLEASE ENTER YOUR NAME."
+   : "يرجى إدخال اسمك.","error");
 
   gameName.focus();
-
   return;
-
  }
 
  if(!selectedAnswer){
-
-  setGameMessage(
-   currentLanguage === "en"
-    ? "PLEASE SELECT AN ANSWER."
-    : "يرجى اختيار إجابة.",
-   "error"
-  );
-
+  setGameMessage(currentLanguage === "en"
+   ? "PLEASE SELECT AN ANSWER."
+   : "يرجى اختيار إجابة.","error");
   return;
-
  }
 
  gameBusy = true;
-
  submitGame.disabled = true;
 
- submitGame.textContent =
-  currentLanguage === "en"
-   ? "CHECKING..."
-   : "جارٍ التحقق...";
+ submitGame.textContent = currentLanguage === "en"
+  ? "CHECKING..."
+  : "جارٍ التحقق...";
 
- setGameMessage(
-  currentLanguage === "en"
-   ? "CHECKING YOUR ANSWER..."
-   : "جارٍ التحقق من إجابتك..."
- );
+ setGameMessage(currentLanguage === "en"
+  ? "CHECKING YOUR ANSWER..."
+  : "جارٍ التحقق من إجابتك...");
 
  try{
-
   const response = await fetch(GAME_FUNCTION,{
-
    method:"POST",
-
    headers:{
-
     "Content-Type":"application/json",
-
     "apikey":SUPABASE_ANON_KEY,
-
     "Authorization":"Bearer " + SUPABASE_ANON_KEY
-
    },
-
-   
-body:JSON.stringify({
-
- name: name,
-
- challenge_id: activeChallenge.id,
-
- option_id: selectedAnswer
-
-})
-   
+   body:JSON.stringify({
+    name:name,
+    challenge_id:activeChallenge.id,
+    option_id:selectedAnswer
+   })
   });
 
   const data = await response.json();
 
   if(!response.ok || !data.success){
-
-   throw new Error(
-    data.message || "Unable to submit your answer."
-   );
-
+   throw new Error(data.message || "Unable to submit your answer.");
   }
 
   if(data.is_winner === true){
-
-   if(
-
-    !data.discount_code ||
-
-    Number(data.discount_percent) !== 15
-
-   ){
-
-    throw new Error(
-     "Invalid discount information."
-    );
-
+   if(!data.discount_code || Number(data.discount_percent) !== 15){
+    throw new Error("Invalid discount information.");
    }
 
    showWinner({
-
     name:name,
-
     discount_code:data.discount_code,
-
     discount_percent:15
-
    },true);
 
   }else if(data.is_correct === true){
-
    selectedAnswer = "";
 
    weeklyOptions.querySelectorAll("button").forEach(function(button){
-
     button.classList.remove("selected");
-
    });
 
-   setGameMessage(
-    currentLanguage === "en"
-     ? "CORRECT ANSWER! BUT ALL 6 WINNER PLACES ARE FILLED."
-     : "إجابة صحيحة! لكن اكتمل عدد الفائزين الستة.",
-    "success"
-   );
+   setGameMessage(currentLanguage === "en"
+    ? "CORRECT ANSWER! BUT ALL 6 WINNER PLACES ARE FILLED."
+    : "إجابة صحيحة! لكن اكتمل عدد الفائزين الستة.",
+    "success");
 
    submitGame.disabled = false;
 
   }else{
-
    selectedAnswer = "";
 
    weeklyOptions.querySelectorAll("button").forEach(function(button){
-
     button.classList.remove("selected");
-
    });
 
-   setGameMessage(
-    currentLanguage === "en"
-     ? "WRONG ANSWER. TRY AGAIN!"
-     : "إجابة خاطئة! حاول مرة أخرى.",
-    "error"
-   );
+   setGameMessage(currentLanguage === "en"
+    ? "WRONG ANSWER. TRY AGAIN!"
+    : "إجابة خاطئة! حاول مرة أخرى.",
+    "error");
 
    submitGame.disabled = false;
-
   }
 
   if(data.winners_count != null){
+   const maxWinners = Number(activeChallenge.max_winners || 6);
 
-   const maxWinners =
-    Number(activeChallenge.max_winners || 6);
-
-   challengeWinners.textContent =
-    currentLanguage === "en"
-     ? "WINNERS: " + data.winners_count + " / " + maxWinners
-     : "الفائزون: " + data.winners_count + " / " + maxWinners;
-
+   challengeWinners.textContent = currentLanguage === "en"
+    ? "WINNERS: " + data.winners_count + " / " + maxWinners
+    : "الفائزون: " + data.winners_count + " / " + maxWinners;
   }
 
  }catch(error){
-
   console.error("Submission error:",error);
 
-  setGameMessage(
-   error.message ||
-   (
-    currentLanguage === "en"
-     ? "CONNECTION ERROR. PLEASE TRY AGAIN."
-     : "حدث خطأ في الاتصال. حاول مرة أخرى."
-   ),
-   "error"
-  );
+  setGameMessage(error.message || (
+   currentLanguage === "en"
+    ? "CONNECTION ERROR. PLEASE TRY AGAIN."
+    : "حدث خطأ في الاتصال. حاول مرة أخرى."
+  ),"error");
 
   submitGame.disabled = false;
 
  }finally{
-
   gameBusy = false;
 
-  submitGame.textContent =
-   currentLanguage === "en"
-    ? "SUBMIT ANSWER"
-    : "إرسال الإجابة";
-
+  submitGame.textContent = currentLanguage === "en"
+   ? "SUBMIT ANSWER"
+   : "إرسال الإجابة";
  }
-
 });
 
 /* ==========================================
    COPY DISCOUNT CODE
 ========================================== */
-
-async function copyDiscountCode(button){
-
- if(!gameWinner || !gameWinner.discount_code){
-
-  return;
-
- }
+ async function copyDiscountCode(button){
+ if(!gameWinner || !gameWinner.discount_code) return;
 
  try{
-
   if(navigator.clipboard && window.isSecureContext){
-
-   await navigator.clipboard.writeText(
-    gameWinner.discount_code
-   );
-
+   await navigator.clipboard.writeText(gameWinner.discount_code);
   }else{
-
    const temp = document.createElement("textarea");
-
    temp.value = gameWinner.discount_code;
-
    temp.style.position = "fixed";
-
    temp.style.opacity = "0";
-
    document.body.appendChild(temp);
-
    temp.select();
 
    const copied = document.execCommand("copy");
-
    temp.remove();
 
-   if(!copied){
-
-    throw new Error("Copy failed");
-
-   }
-
+   if(!copied) throw new Error("Copy failed");
   }
 
-  button.textContent =
-   currentLanguage === "en"
-    ? "COPIED!"
-    : "تم النسخ!";
+  button.textContent = currentLanguage === "en" ? "COPIED!" : "تم النسخ!";
 
  }catch(error){
-
   console.error("Copy error:",error);
-
-  button.textContent =
-   gameWinner.discount_code;
-
+  button.textContent = gameWinner.discount_code;
  }
-
 }
 
-/* WINNER CARD COPY BUTTON */
-
 copyWinnerCode.addEventListener("click",function(){
-
  copyDiscountCode(copyWinnerCode);
-
 });
 
-/* COLLECTION COPY BUTTON */
-
 collectionCopyCode.addEventListener("click",function(){
-
  copyDiscountCode(collectionCopyCode);
-
 });
 
 /* ==========================================
    INITIALIZATION
 ========================================== */
-
-/* APPLY SAVED THEME */
-
-updateTheme();
-
-/* APPLY SAVED LANGUAGE */
-
+ updateTheme();
 updateLanguage();
 
-/* LOAD WEEKLY CHALLENGE FROM SUPABASE */
-
+/* Load products and weekly challenge */
+loadProducts();
 loadWeeklyChallenge();
-                          
-
-
-  
 
 </script>
-
 </body>
 </html>
-
-     
