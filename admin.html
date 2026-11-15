@@ -1060,56 +1060,93 @@ async function loadProductImages() {
       name.textContent = file.name;
 
       const deleteButton = document.createElement("button");
-      deleteButton.className = "danger";
-      deleteButton.textContent = "DELETE";
-      deleteButton.style.width = "100%";
 
-      deleteButton.addEventListener("click", async () => {
+<!-- PRODUCT MANAGEMENT -->
+<div class="panel" id="productImageManager">
 
-        if (!confirm("Delete this product image?")) return;
+  <h2>PRODUCT MANAGEMENT</h2>
+  <p class="muted">Manage your six products and their five images.</p>
 
-        deleteButton.disabled = true;
+  <form id="productForm">
 
-        try {
-          await ensureAdmin();
+    <input type="hidden" id="productId">
 
-          const { error } = await db.storage
-            .from(PRODUCT_BUCKET)
-            .remove([path]);
+    <label class="field-label" for="productName">PRODUCT NAME</label>
+    <input id="productName" type="text" required maxlength="150">
 
-          if (error) throw error;
+    <label class="field-label" for="productPrice">PRICE</label>
+    <input id="productPrice" type="number" min="0" step="0.01" required>
 
-          showSuccess($("productImageMessage"),
-            "Product image deleted successfully.");
+    <label class="field-label" for="productDescription">DESCRIPTION</label>
+    <textarea id="productDescription" rows="4"></textarea>
 
-          await loadProductImages();
+    <label class="field-label" for="productSizes">SIZES</label>
+    <input id="productSizes" type="text" placeholder="S, M, L, XL">
 
-        } catch (error) {
-          showError($("productImageMessage"),
-            error.message || "Could not delete image.");
+    <label class="field-label" for="productStatus">STATUS TEXT</label>
+    <input id="productStatus" type="text" placeholder="NEW">
 
-          deleteButton.disabled = false;
-        }
-      });
+    <label class="field-label">PRODUCT VISIBILITY</label>
+    <label>
+      <input id="productVisible" type="checkbox" checked>
+      SHOW PRODUCT ON WEBSITE
+    </label>
 
-      card.append(img, name, deleteButton);
-      gallery.appendChild(card);
-    });
+    <hr>
 
-    $("productImageMessage").textContent = "";
+    <h3>MAIN PRODUCT IMAGE</h3>
+    <input type="file" id="mainProductImage"
+      accept="image/jpeg,image/png,image/webp">
 
-  } catch (error) {
-    showError($("productImageMessage"),
-      error.message || "Could not load product images.");
-  }
-}
+    <div id="mainProductPreview"></div>
 
-/* REFRESH GALLERY */
+    <h3>FOUR GALLERY IMAGES</h3>
+    <p class="hint">Select one image for each gallery position.</p>
 
-$("refreshProductImages").addEventListener(
-  "click",
-  loadProductImages
-);
+    <div class="product-gallery-fields">
+
+      <label>IMAGE 1
+        <input type="file" class="galleryProductImage"
+          data-index="0" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+      <label>IMAGE 2
+        <input type="file" class="galleryProductImage"
+          data-index="1" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+      <label>IMAGE 3
+        <input type="file" class="galleryProductImage"
+          data-index="2" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+      <label>IMAGE 4
+        <input type="file" class="galleryProductImage"
+          data-index="3" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+    </div>
+
+    <p id="productImageMessage" class="message"></p>
+
+    <button type="submit" id="saveProductButton" class="primary">
+      SAVE PRODUCT
+    </button>
+
+    <button type="button" id="resetProductForm" class="secondary">
+      CLEAR FORM
+    </button>
+
+  </form>
+
+  <hr>
+
+  <h3>YOUR PRODUCTS</h3>
+  <div id="productsAdminList"></div>
+
+</div>
+<!-- END PRODUCT MANAGEMENT -->
+     
 /* INITIAL CHECK */
 createOptionInputs();
 checkAdmin();
