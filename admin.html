@@ -97,7 +97,50 @@ footer{text-align:center;color:#cdb99a;font-size:11px;padding:30px}
 <button id="logoutButton" class="secondary">LOG OUT</button>
 </div>
 </div>
+<!-- PRODUCT IMAGE MANAGER -->
+<div class="panel" id="productImageManager">
 
+<h2>PRODUCT IMAGE MANAGER</h2>
+<p class="muted">Upload and manage product images.</p>
+
+<label class="field-label" for="productImage">
+SELECT PRODUCT IMAGE
+</label>
+
+<input
+  type="file"
+  id="productImage"
+  accept="image/jpeg,image/png,image/webp"
+>
+
+<p class="hint">JPG, PNG or WEBP. Maximum size: 5 MB.</p>
+
+<div id="productPreview" class="hidden">
+  <img
+    id="productPreviewImage"
+    alt="Product preview"
+    style="width:100%;max-width:300px;display:block;margin:15px 0"
+  >
+</div>
+
+<button type="button" id="uploadProductButton" class="primary">
+UPLOAD PRODUCT IMAGE
+</button>
+
+<button type="button" id="refreshProductImages" class="secondary">
+REFRESH PRODUCT IMAGES
+</button>
+
+<p id="productImageMessage" class="message"></p>
+
+<h2 style="margin-top:30px">UPLOADED PRODUCTS</h2>
+
+<div
+  id="productImagesGallery"
+  style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:15px"
+></div>
+
+</div>
 <!-- STATISTICS -->
 <div class="stats">
 <div class="stat">
@@ -843,7 +886,230 @@ $("logoutButton").addEventListener("click",async()=>{
  loginMessage.textContent="You have signed out.";
  resetEditor();
 });
+/* =====================================
+   PRODUCT IMAGE MANAGER
+===================================== */
 
+const PRODUCT_BUCKET = "product-images";
+
+let selectedProductFile = null;
+let productImageBusy = false;
+
+/* SELECT IMAGE */
+
+$("productImage").addEventListener("change", event => {
+  const file = event.target.files[0];
+
+  selectedProductFile = null;
+  $("productPreview").classList.add("hidden");
+  $("productImageMessage").textContent = "";
+
+  if (!file) return;
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    showError($("productImageMessage"),
+      "Only JPG, PNG and WEBP images are allowed.");
+
+    event.target.value = "";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    showError($("productImageMessage"),
+      "Maximum image size is 5 MB.");
+
+    event.target.value = "";
+    return;
+  }
+
+  selectedProductFile = file;
+
+  const previewURL = URL.createObjectURL(file);
+
+  $("productPreviewImage").src = previewURL;
+  $("productPreview").classList.remove("hidden");
+
+  showSuccess($("productImageMessage"),
+    "Image selected successfully.");
+});
+
+/* UPLOAD IMAGE */
+
+$("uploadProductButton").addEventListener("click", async () => {
+
+  if (productImageBusy) return;
+
+  if (!selectedProductFile) {
+    showError($("productImageMessage"),
+      "Please select an image first.");
+    return;
+  }
+
+  productImageBusy = true;
+
+  const button = $("uploadProductButton");
+  button.disabled = true;
+
+  try {
+    await ensureAdmin();
+
+    const file = selectedProductFile;
+
+    const extension = file.type === "image/jpeg"
+      ? "jpg"
+      : file.type === "image/png"
+        ? "png"
+        : "webp";
+
+    const filePath =
+      "products/" + crypto.randomUUID() + "." + extension;
+
+    const { data, error } = await db.storage
+      .from(PRODUCT_BUCKET)
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type
+      });
+
+    if (error) throw error;
+
+    selectedProductFile = null;
+    $("productImage").value = "";
+    $("productPreview").classList.add("hidden");
+
+    showSuccess($("productImageMessage"),
+      "Product image uploaded successfully!");
+
+    await loadProductImages();
+
+  } catch (error) {
+    showError($("productImageMessage"),
+      error.message || "Image upload failed.");
+
+  } finally {
+    productImageBusy = false;
+    button.disabled = false;
+  }
+});
+
+/* LOAD PRODUCT IMAGES */
+
+async function loadProductImages() {
+
+  const gallery = $("productImagesGallery");
+  gallery.replaceChildren();
+
+  $("productImageMessage").textContent = "Loading images...";
+
+  try {
+    await ensureAdmin();
+
+    const { data, error } = await db.storage
+      .from(PRODUCT_BUCKET)
+      .list("products", {
+        limit: 100,
+        sortBy: {
+          column: "name",
+          order: "desc"
+        }
+      });
+
+    if (error) throw error;
+
+    const images = (data || []).filter(file =>
+      file.name &&
+      /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+    );
+
+    if (!images.length) {
+      $("productImageMessage").textContent =
+        "No product images uploaded yet.";
+      return;
+    }
+
+    images.forEach(file => {
+
+      const path = "products/" + file.name;
+
+      const { data: publicData } = db.storage
+        .from(PRODUCT_BUCKET)
+        .getPublicUrl(path);
+
+      const card = document.createElement("div");
+
+      card.style.cssText =
+        "background:#11100e;border:1px solid #554633;padding:10px;min-width:0";
+
+      const img = document.createElement("img");
+      img.src = publicData.publicUrl;
+      img.alt = "Product image";
+      img.loading = "lazy";
+
+      img.style.cssText =
+        "width:100%;aspect-ratio:1;object-fit:cover;display:block";
+
+      const name = document.createElement("p");
+      name.className = "hint";
+      name.textContent = file.name;
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "danger";
+      deleteButton.textContent = "DELETE";
+      deleteButton.style.width = "100%";
+
+      deleteButton.addEventListener("click", async () => {
+
+        if (!confirm("Delete this product image?")) return;
+
+        deleteButton.disabled = true;
+
+        try {
+          await ensureAdmin();
+
+          const { error } = await db.storage
+            .from(PRODUCT_BUCKET)
+            .remove([path]);
+
+          if (error) throw error;
+
+          showSuccess($("productImageMessage"),
+            "Product image deleted successfully.");
+
+          await loadProductImages();
+
+        } catch (error) {
+          showError($("productImageMessage"),
+            error.message || "Could not delete image.");
+
+          deleteButton.disabled = false;
+        }
+      });
+
+      card.append(img, name, deleteButton);
+      gallery.appendChild(card);
+    });
+
+    $("productImageMessage").textContent = "";
+
+  } catch (error) {
+    showError($("productImageMessage"),
+      error.message || "Could not load product images.");
+  }
+}
+
+/* REFRESH GALLERY */
+
+$("refreshProductImages").addEventListener(
+  "click",
+  loadProductImages
+);
 /* INITIAL CHECK */
 createOptionInputs();
 checkAdmin();
