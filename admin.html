@@ -97,50 +97,91 @@ footer{text-align:center;color:#cdb99a;font-size:11px;padding:30px}
 <button id="logoutButton" class="secondary">LOG OUT</button>
 </div>
 </div>
-<!-- PRODUCT IMAGE MANAGER -->
+
+<!-- PRODUCT MANAGEMENT -->
 <div class="panel" id="productImageManager">
 
-<h2>PRODUCT IMAGE MANAGER</h2>
-<p class="muted">Upload and manage product images.</p>
+  <h2>PRODUCT MANAGEMENT</h2>
+  <p class="muted">Manage up to six products with five images each.</p>
 
-<label class="field-label" for="productImage">
-SELECT PRODUCT IMAGE
-</label>
+  <form id="productForm">
 
-<input
-  type="file"
-  id="productImage"
-  accept="image/jpeg,image/png,image/webp"
->
+    <input type="hidden" id="productId">
 
-<p class="hint">JPG, PNG or WEBP. Maximum size: 5 MB.</p>
+    <label class="field-label" for="productName">PRODUCT NAME</label>
+    <input id="productName" type="text" maxlength="150" required>
 
-<div id="productPreview" class="hidden">
-  <img
-    id="productPreviewImage"
-    alt="Product preview"
-    style="width:100%;max-width:300px;display:block;margin:15px 0"
-  >
+    <label class="field-label" for="productPrice">PRICE</label>
+    <input id="productPrice" type="number" min="0" step="0.01" required>
+
+    <label class="field-label" for="productDescription">DESCRIPTION</label>
+    <textarea id="productDescription" rows="4"></textarea>
+
+    <label class="field-label" for="productSizes">SIZES</label>
+    <input id="productSizes" type="text" placeholder="S, M, L, XL">
+
+    <label class="field-label" for="productStatus">STATUS</label>
+    <input id="productStatus" type="text" placeholder="NEW">
+
+    <label class="field-label">
+      <input id="productVisible" type="checkbox" checked>
+      SHOW PRODUCT ON WEBSITE
+    </label>
+
+    <hr>
+
+    <h3>MAIN PRODUCT IMAGE</h3>
+    <input type="file" id="mainProductImage"
+      accept="image/jpeg,image/png,image/webp">
+    <div id="mainProductPreview"></div>
+
+    <h3>FOUR GALLERY IMAGES</h3>
+    <p class="hint">Maximum five images per product, including the main image.</p>
+
+    <div class="product-gallery-fields">
+
+      <label class="field-label">IMAGE 1
+        <input type="file" class="galleryProductImage"
+          data-index="0" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+      <label class="field-label">IMAGE 2
+        <input type="file" class="galleryProductImage"
+          data-index="1" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+      <label class="field-label">IMAGE 3
+        <input type="file" class="galleryProductImage"
+          data-index="2" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+      <label class="field-label">IMAGE 4
+        <input type="file" class="galleryProductImage"
+          data-index="3" accept="image/jpeg,image/png,image/webp">
+      </label>
+
+    </div>
+
+    <p id="productImageMessage" class="message"></p>
+
+    <button type="submit" id="saveProductButton" class="primary">
+      SAVE PRODUCT
+    </button>
+
+    <button type="button" id="resetProductForm" class="secondary">
+      CLEAR FORM
+    </button>
+
+  </form>
+
+  <hr>
+
+  <h3>YOUR PRODUCTS (MAXIMUM 6)</h3>
+  <div id="productsAdminList"></div>
+
 </div>
-
-<button type="button" id="uploadProductButton" class="primary">
-UPLOAD PRODUCT IMAGE
-</button>
-
-<button type="button" id="refreshProductImages" class="secondary">
-REFRESH PRODUCT IMAGES
-</button>
-
-<p id="productImageMessage" class="message"></p>
-
-<h2 style="margin-top:30px">UPLOADED PRODUCTS</h2>
-
-<div
-  id="productImagesGallery"
-  style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:15px"
-></div>
-
-</div>
+<!-- END PRODUCT MANAGEMENT -->
+ 
 <!-- STATISTICS -->
 <div class="stats">
 <div class="stat">
@@ -510,7 +551,8 @@ async function loadDashboard(){
  await Promise.all([
   loadChallenges(),
   loadParticipants(),
-  loadWinners()
+  loadWinners(),
+  loadProducts()
  ]);
 }
 
@@ -886,266 +928,513 @@ $("logoutButton").addEventListener("click",async()=>{
  loginMessage.textContent="You have signed out.";
  resetEditor();
 });
+
 /* =====================================
-   PRODUCT IMAGE MANAGER
+   PRODUCT MANAGEMENT
 ===================================== */
 
 const PRODUCT_BUCKET = "product-images";
+const MAX_PRODUCTS = 6;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
-let selectedProductFile = null;
-let productImageBusy = false;
+let adminProducts = [];
+let productBusy = false;
 
-/* SELECT IMAGE */
+const productImageInputs = [
+  $("mainProductImage"),
+  ...$("productForm").querySelectorAll(".galleryProductImage")
+];
 
-$("productImage").addEventListener("change", event => {
-  const file = event.target.files[0];
+/* IMAGE VALIDATION */
 
-  selectedProductFile = null;
-  $("productPreview").classList.add("hidden");
-  $("productImageMessage").textContent = "";
-
+function validateProductImage(file) {
   if (!file) return;
 
-  const allowedTypes = [
+  const allowed = [
     "image/jpeg",
     "image/png",
     "image/webp"
   ];
 
-  if (!allowedTypes.includes(file.type)) {
-    showError($("productImageMessage"),
-      "Only JPG, PNG and WEBP images are allowed.");
-
-    event.target.value = "";
-    return;
+  if (!allowed.includes(file.type)) {
+    throw new Error("Only JPG, PNG and WEBP images are allowed.");
   }
 
-  if (file.size > 5 * 1024 * 1024) {
-    showError($("productImageMessage"),
-      "Maximum image size is 5 MB.");
+  if (file.size > MAX_IMAGE_SIZE) {
+    throw new Error("Each image must be smaller than 5 MB.");
+  }
+}
 
-    event.target.value = "";
-    return;
+/* IMAGE UPLOAD */
+
+async function uploadProductImage(file) {
+  validateProductImage(file);
+
+  const extension = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp"
+  }[file.type];
+
+  const path =
+    "products/" + crypto.randomUUID() + "." + extension;
+
+  const { error } = await db.storage
+    .from(PRODUCT_BUCKET)
+    .upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type
+    });
+
+  if (error) throw error;
+
+  const { data } = db.storage
+    .from(PRODUCT_BUCKET)
+    .getPublicUrl(path);
+
+  return {
+    path,
+    url: data.publicUrl
+  };
+}
+
+/* GET STORAGE PATH FROM URL */
+
+function getProductStoragePath(value) {
+  if (!value) return null;
+
+  const prefix =
+    "/storage/v1/object/public/" + PRODUCT_BUCKET + "/";
+
+  if (value.startsWith("products/")) {
+    return value;
   }
 
-  selectedProductFile = file;
+  try {
+    const url = new URL(value);
+    const index = url.pathname.indexOf(prefix);
 
-  const previewURL = URL.createObjectURL(file);
+    if (index === -1) return null;
 
-  $("productPreviewImage").src = previewURL;
-  $("productPreview").classList.remove("hidden");
+    return decodeURIComponent(
+      url.pathname.slice(index + prefix.length)
+    );
+  } catch {
+    return null;
+  }
+}
 
-  showSuccess($("productImageMessage"),
-    "Image selected successfully.");
+/* DELETE STORAGE IMAGES */
+
+async function deleteProductStorageImages(images) {
+  const paths = (images || [])
+    .map(getProductStoragePath)
+    .filter(Boolean);
+
+  if (!paths.length) return;
+
+  const { error } = await db.storage
+    .from(PRODUCT_BUCKET)
+    .remove(paths);
+
+  if (error) throw error;
+}
+
+/* IMAGE PREVIEW */
+
+$("mainProductImage").addEventListener("change", event => {
+  const file = event.target.files[0];
+  const preview = $("mainProductPreview");
+
+  preview.replaceChildren();
+
+  if (!file) return;
+
+  try {
+    validateProductImage(file);
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.alt = "Main product preview";
+    img.style.cssText =
+      "width:180px;max-width:100%;margin:10px 0;display:block";
+
+    preview.appendChild(img);
+
+  } catch (error) {
+    event.target.value = "";
+    showError($("productImageMessage"), error.message);
+  }
 });
 
-/* UPLOAD IMAGE */
+/* RESET PRODUCT FORM */
 
-$("uploadProductButton").addEventListener("click", async () => {
+function resetProductForm() {
+  $("productForm").reset();
 
-  if (productImageBusy) return;
+  $("productId").value = "";
+  $("productVisible").checked = true;
 
-  if (!selectedProductFile) {
-    showError($("productImageMessage"),
-      "Please select an image first.");
-    return;
-  }
+  $("mainProductPreview").replaceChildren();
 
-  productImageBusy = true;
+  productImageInputs.forEach(input => {
+    input.value = "";
+  });
 
-  const button = $("uploadProductButton");
-  button.disabled = true;
+  $("productImageMessage").textContent = "";
+  $("saveProductButton").textContent = "SAVE PRODUCT";
+}
+
+$("resetProductForm").addEventListener(
+  "click",
+  resetProductForm
+);
+
+/* LOAD PRODUCTS */
+
+async function loadProducts() {
+  const list = $("productsAdminList");
+
+  list.replaceChildren();
+
+  $("productImageMessage").textContent =
+    "Loading products...";
 
   try {
     await ensureAdmin();
 
-    const file = selectedProductFile;
-
-    const extension = file.type === "image/jpeg"
-      ? "jpg"
-      : file.type === "image/png"
-        ? "png"
-        : "webp";
-
-    const filePath =
-      "products/" + crypto.randomUUID() + "." + extension;
-
-    const { data, error } = await db.storage
-      .from(PRODUCT_BUCKET)
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type
-      });
+    const { data, error } = await db
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
 
-    selectedProductFile = null;
-    $("productImage").value = "";
-    $("productPreview").classList.add("hidden");
+    adminProducts = data || [];
 
-    showSuccess($("productImageMessage"),
-      "Product image uploaded successfully!");
+    adminProducts.forEach(product => {
+      const card = document.createElement("div");
 
-    await loadProductImages();
+      card.style.cssText =
+        "background:#11100e;border:1px solid #554633;padding:14px;margin:12px 0";
+
+      const title = document.createElement("h3");
+      title.textContent = product.name;
+
+      const price = document.createElement("p");
+      price.className = "muted";
+      price.textContent = "PRICE: " + product.price;
+
+      const status = document.createElement("p");
+      status.className = "muted";
+      status.textContent =
+        "STATUS: " + (product.status || "—") +
+        " | " + (product.is_visible ? "VISIBLE" : "HIDDEN");
+
+      const gallery = document.createElement("div");
+
+      gallery.style.cssText =
+        "display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px";
+
+      (product.images || []).forEach(url => {
+        if (!url) return;
+
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = product.name;
+        img.loading = "lazy";
+
+        img.style.cssText =
+          "width:100%;aspect-ratio:1;object-fit:cover";
+
+        gallery.appendChild(img);
+      });
+
+      const editButton = document.createElement("button");
+      editButton.textContent = "EDIT";
+      editButton.addEventListener("click", () => {
+        editProduct(product.id);
+      });
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "DELETE";
+      deleteButton.className = "danger";
+
+      deleteButton.addEventListener("click", () => {
+        deleteProduct(product.id);
+      });
+
+      card.append(
+        title,
+        price,
+        status,
+        gallery,
+        editButton,
+        deleteButton
+      );
+
+      list.appendChild(card);
+    });
+
+    const count = adminProducts.length;
+
+    $("productImageMessage").textContent =
+      count + " / " + MAX_PRODUCTS + " products.";
+
+    if (count === 0) {
+      list.textContent = "No products created yet.";
+    }
+
+    $("saveProductButton").disabled =
+      count >= MAX_PRODUCTS &&
+      !$("productId").value;
 
   } catch (error) {
-    showError($("productImageMessage"),
-      error.message || "Image upload failed.");
+    showError($("productImageMessage"), error.message);
+  }
+}
+
+/* EDIT PRODUCT */
+
+function editProduct(id) {
+  const product = adminProducts.find(item => item.id === id);
+
+  if (!product) return;
+
+  resetProductForm();
+
+  $("productId").value = product.id;
+  $("productName").value = product.name || "";
+  $("productPrice").value = product.price ?? "";
+  $("productDescription").value = product.description || "";
+  $("productStatus").value = product.status || "";
+  $("productVisible").checked = product.is_visible === true;
+
+  $("saveProductButton").textContent = "UPDATE PRODUCT";
+
+  const images = product.images || [];
+
+  if (images[0]) {
+    const img = document.createElement("img");
+
+    img.src = images[0];
+    img.alt = "Current main product image";
+
+    img.style.cssText =
+      "width:180px;max-width:100%;margin:10px 0;display:block";
+
+    $("mainProductPreview").appendChild(img);
+  }
+
+  showSuccess(
+    $("productImageMessage"),
+    "Product loaded. Select only the images you want to replace."
+  );
+
+  $("productForm").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+/* SAVE PRODUCT */
+
+$("productForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (productBusy) return;
+
+  productBusy = true;
+
+  const button = $("saveProductButton");
+  button.disabled = true;
+
+  const uploadedPaths = [];
+
+  try {
+    await ensureAdmin();
+
+    const id = $("productId").value;
+    const existing = id
+      ? adminProducts.find(item => item.id === id)
+      : null;
+
+    if (id && !existing) {
+      throw new Error("Product not found. Refresh and try again.");
+    }
+
+    if (!id && adminProducts.length >= MAX_PRODUCTS) {
+      throw new Error("Maximum six products allowed.");
+    }
+
+    const name = $("productName").value.trim();
+    const price = Number($("productPrice").value);
+
+    if (!name) {
+      throw new Error("Please enter the product name.");
+    }
+
+    if (
+      $("productPrice").value.trim() === "" ||
+      !Number.isFinite(price) ||
+      price < 0
+    ) {
+      throw new Error("Please enter a valid product price.");
+    }
+
+    const images = Array.from(
+      { length: 5 },
+      (_, index) => existing?.images?.[index] || ""
+    );
+
+    const oldImages = existing?.images || [];
+
+    /* Upload only newly selected images */
+
+    for (let i = 0; i < productImageInputs.length; i++) {
+      const file = productImageInputs[i].files[0];
+
+      if (!file) continue;
+
+      const uploaded = await uploadProductImage(file);
+
+      uploadedPaths.push(uploaded.path);
+      images[i] = uploaded.url;
+    }
+
+    const values = {
+      name,
+      price,
+      description: $("productDescription").value.trim(),
+      images,
+      status: $("productStatus").value.trim(),
+      is_visible: $("productVisible").checked,
+      updated_at: new Date().toISOString()
+    };
+
+    let savedProduct;
+
+    if (id) {
+      const { data, error } = await db
+        .from("products")
+        .update(values)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      savedProduct = data;
+
+    } else {
+      const { data, error } = await db
+        .from("products")
+        .insert(values)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      savedProduct = data;
+    }
+
+    /* Remove replaced old images after successful save */
+
+    const replacedImages = oldImages.filter((oldUrl, index) => {
+      return oldUrl && oldUrl !== images[index];
+    });
+
+    try {
+      await deleteProductStorageImages(replacedImages);
+    } catch (cleanupError) {
+      console.error("Old image cleanup failed:", cleanupError);
+    }
+
+    showSuccess(
+      $("productImageMessage"),
+      "Product saved successfully!"
+    );
+
+    resetProductForm();
+    await loadProducts();
+
+  } catch (error) {
+
+    /* Clean up newly uploaded images if saving failed */
+
+    if (uploadedPaths.length) {
+      await db.storage
+        .from(PRODUCT_BUCKET)
+        .remove(uploadedPaths);
+    }
+
+    showError(
+      $("productImageMessage"),
+      error.message || "Product save failed."
+    );
 
   } finally {
-    productImageBusy = false;
+    productBusy = false;
     button.disabled = false;
   }
 });
 
-/* LOAD PRODUCT IMAGES */
+/* DELETE PRODUCT */
 
-async function loadProductImages() {
+async function deleteProduct(id) {
+  if (productBusy) return;
 
-  const gallery = $("productImagesGallery");
-  gallery.replaceChildren();
+  const product = adminProducts.find(item => item.id === id);
 
-  $("productImageMessage").textContent = "Loading images...";
+  if (!product) return;
+
+  if (!confirm(
+    "Delete " + product.name +
+    " and all its product images?"
+  )) return;
+
+  productBusy = true;
 
   try {
     await ensureAdmin();
 
-    const { data, error } = await db.storage
-      .from(PRODUCT_BUCKET)
-      .list("products", {
-        limit: 100,
-        sortBy: {
-          column: "name",
-          order: "desc"
-        }
-      });
+    const { error } = await db
+      .from("products")
+      .delete()
+      .eq("id", id);
 
     if (error) throw error;
 
-    const images = (data || []).filter(file =>
-      file.name &&
-      /\.(jpg|jpeg|png|webp)$/i.test(file.name)
-    );
+    try {
+      await deleteProductStorageImages(product.images || []);
+    } catch (cleanupError) {
+      console.error("Image cleanup failed:", cleanupError);
 
-    if (!images.length) {
-      $("productImageMessage").textContent =
-        "No product images uploaded yet.";
-      return;
+      showError(
+        $("productImageMessage"),
+        "Product deleted, but some storage images could not be deleted."
+      );
     }
 
-    images.forEach(file => {
+    if ($("productId").value === id) {
+      resetProductForm();
+    }
 
-      const path = "products/" + file.name;
+    await loadProducts();
 
-      const { data: publicData } = db.storage
-        .from(PRODUCT_BUCKET)
-        .getPublicUrl(path);
+  } catch (error) {
+    showError(
+      $("productImageMessage"),
+      error.message || "Product deletion failed."
+    );
 
-      const card = document.createElement("div");
-
-      card.style.cssText =
-        "background:#11100e;border:1px solid #554633;padding:10px;min-width:0";
-
-      const img = document.createElement("img");
-      img.src = publicData.publicUrl;
-      img.alt = "Product image";
-      img.loading = "lazy";
-
-      img.style.cssText =
-        "width:100%;aspect-ratio:1;object-fit:cover;display:block";
-
-      const name = document.createElement("p");
-      name.className = "hint";
-      name.textContent = file.name;
-
-      const deleteButton = document.createElement("button");
-
-<!-- PRODUCT MANAGEMENT -->
-<div class="panel" id="productImageManager">
-
-  <h2>PRODUCT MANAGEMENT</h2>
-  <p class="muted">Manage your six products and their five images.</p>
-
-  <form id="productForm">
-
-    <input type="hidden" id="productId">
-
-    <label class="field-label" for="productName">PRODUCT NAME</label>
-    <input id="productName" type="text" required maxlength="150">
-
-    <label class="field-label" for="productPrice">PRICE</label>
-    <input id="productPrice" type="number" min="0" step="0.01" required>
-
-    <label class="field-label" for="productDescription">DESCRIPTION</label>
-    <textarea id="productDescription" rows="4"></textarea>
-
-    <label class="field-label" for="productSizes">SIZES</label>
-    <input id="productSizes" type="text" placeholder="S, M, L, XL">
-
-    <label class="field-label" for="productStatus">STATUS TEXT</label>
-    <input id="productStatus" type="text" placeholder="NEW">
-
-    <label class="field-label">PRODUCT VISIBILITY</label>
-    <label>
-      <input id="productVisible" type="checkbox" checked>
-      SHOW PRODUCT ON WEBSITE
-    </label>
-
-    <hr>
-
-    <h3>MAIN PRODUCT IMAGE</h3>
-    <input type="file" id="mainProductImage"
-      accept="image/jpeg,image/png,image/webp">
-
-    <div id="mainProductPreview"></div>
-
-    <h3>FOUR GALLERY IMAGES</h3>
-    <p class="hint">Select one image for each gallery position.</p>
-
-    <div class="product-gallery-fields">
-
-      <label>IMAGE 1
-        <input type="file" class="galleryProductImage"
-          data-index="0" accept="image/jpeg,image/png,image/webp">
-      </label>
-
-      <label>IMAGE 2
-        <input type="file" class="galleryProductImage"
-          data-index="1" accept="image/jpeg,image/png,image/webp">
-      </label>
-
-      <label>IMAGE 3
-        <input type="file" class="galleryProductImage"
-          data-index="2" accept="image/jpeg,image/png,image/webp">
-      </label>
-
-      <label>IMAGE 4
-        <input type="file" class="galleryProductImage"
-          data-index="3" accept="image/jpeg,image/png,image/webp">
-      </label>
-
-    </div>
-
-    <p id="productImageMessage" class="message"></p>
-
-    <button type="submit" id="saveProductButton" class="primary">
-      SAVE PRODUCT
-    </button>
-
-    <button type="button" id="resetProductForm" class="secondary">
-      CLEAR FORM
-    </button>
-
-  </form>
-
-  <hr>
-
-  <h3>YOUR PRODUCTS</h3>
-  <div id="productsAdminList"></div>
-
-</div>
-<!-- END PRODUCT MANAGEMENT -->
+  } finally {
+    productBusy = false;
+  }
+          }
+ 
+      
      
 /* INITIAL CHECK */
 createOptionInputs();
