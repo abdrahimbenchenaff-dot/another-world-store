@@ -157,7 +157,7 @@ body[dir="rtl"] .modal-close{right:auto;left:14px}
  gap:8px;margin-bottom:24px;
 }
 .gallery-thumb{
- height:95px;padding:0;border:1px solid var(--border);
+ height:110px;padding:0;border:1px solid var(--border);
  background:var(--section);cursor:zoom-in;overflow:hidden;
 }
 .gallery-thumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -186,7 +186,13 @@ body[dir="rtl"] .modal-close{right:auto;left:14px}
 body[dir="rtl"] .viewer-close{right:auto;left:0}
 .modal-content h2{font-family:Georgia,serif;font-size:27px;margin:15px 0}
 .modal-description{color:var(--muted);line-height:1.8;font-size:13px}
-.modal-price{font-family:Georgia,serif;font-size:20px;margin:20px 0}
+.modal-details{width:min(100%,760px);margin:0 auto;text-align:center}
+.modal-details h2{font-size:clamp(27px,4vw,40px)}
+.modal-description{max-width:680px;margin:12px auto 20px}
+.modal-price{font-family:Georgia,serif;font-size:22px;margin:20px 0}
+.modal-sizes,.modal-status{margin:12px 0;color:var(--muted);font-size:14px;line-height:1.8}
+.modal-status strong{color:var(--text);letter-spacing:1.5px}
+.gallery-hint{color:var(--muted);font-size:11px;letter-spacing:1px;margin:0 0 12px}
 .modal-whatsapp{
  display:inline-block;padding:14px 22px;background:var(--button);
  color:var(--button-text);text-decoration:none;font-size:11px;
@@ -413,10 +419,15 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
    </button>
    <div class="gallery-thumbnails" id="galleryThumbnails"></div>
   </div>
-  <p class="eyebrow" data-en="ANOTHER WORLD COLLECTION" data-ar="مجموعة عالم آخر">ANOTHER WORLD COLLECTION</p>
-  <h2 id="modalTitle">YOUR NEXT PIECE</h2>
-  <p class="modal-description" id="modalDescription"></p>
-  <div class="modal-price" id="modalPrice"></div>
+  <p class="gallery-hint" data-en="SWIPE TO EXPLORE • TAP A PHOTO TO ENLARGE" data-ar="اسحب لاستكشاف الصور • اضغط على الصورة لتكبيرها">SWIPE TO EXPLORE • TAP A PHOTO TO ENLARGE</p>
+  <div class="modal-details">
+   <p class="eyebrow" data-en="ANOTHER WORLD COLLECTION" data-ar="مجموعة عالم آخر">ANOTHER WORLD COLLECTION</p>
+   <h2 id="modalTitle">YOUR NEXT PIECE</h2>
+   <p class="modal-description" id="modalDescription"></p>
+   <div class="modal-price" id="modalPrice"></div>
+   <p class="modal-sizes" id="modalSizes"></p>
+   <p class="modal-status" id="modalStatus"></p>
+  </div>
   <a class="modal-whatsapp" id="modalWhatsapp" href="https://wa.me/213791237069" target="_blank" rel="noopener" data-en="ASK ABOUT THIS PIECE" data-ar="استفسر عن هذه القطعة">
    ASK ABOUT THIS PIECE
   </a>
@@ -456,8 +467,7 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
    ANOTHER WORLD - COMPLETE JAVASCRIPT
    Supabase Products + Gallery + Game
 ========================================== */
-
-/* GENERAL ELEMENTS */
+ /* GENERAL ELEMENTS */
 const languageBtn = document.getElementById("languageBtn");
 const themeBtn = document.getElementById("themeBtn");
 
@@ -466,6 +476,8 @@ const modalClose = document.getElementById("modalClose");
 const modalTitle = document.getElementById("modalTitle");
 const modalDescription = document.getElementById("modalDescription");
 const modalPrice = document.getElementById("modalPrice");
+const modalSizes = document.getElementById("modalSizes");
+const modalStatus = document.getElementById("modalStatus");
 const modalWhatsapp = document.getElementById("modalWhatsapp");
 
 const imageViewer = document.getElementById("imageViewer");
@@ -749,7 +761,7 @@ function openProductDetails(product){
 }
 
 /* LOAD PRODUCT GALLERY FROM SUPABASE IMAGES */
-function loadGallery(product){
+ function loadGallery(product){
  if(!product) return;
 
  currentProduct = product;
@@ -765,6 +777,15 @@ function loadGallery(product){
  modalPrice.textContent = currentLanguage === "ar"
   ? "السعر: " + formatProductPrice(product.price)
   : "PRICE: " + formatProductPrice(product.price);
+
+ const sizes = Array.isArray(product.sizes) ? product.sizes.filter(Boolean).join(" • ") : (product.sizes || "");
+ modalSizes.textContent = sizes
+  ? (currentLanguage === "ar" ? "المقاسات: " : "SIZES: ") + sizes
+  : (currentLanguage === "ar" ? "المقاسات: تواصل معنا للتأكيد" : "SIZES: CONTACT US TO CONFIRM");
+
+ const rawStatus = String(product.status || "").trim();
+ const statusLabel = rawStatus ? rawStatus.toUpperCase() : (currentLanguage === "ar" ? "متوفر" : "AVAILABLE");
+ modalStatus.textContent = (currentLanguage === "ar" ? "الحالة: " : "STATUS: ") + statusLabel;
 
  const whatsappMessage = encodeURIComponent(
   "Hello, I am interested in: " + (product.name || "this product")
@@ -812,10 +833,14 @@ function loadGallery(product){
   button.addEventListener("click",function(){
    currentMainImage = imageUrl;
    showMainProductImage(imageUrl);
+   Array.from(galleryThumbnails.children).forEach(function(item){
+    item.style.borderColor = item === button ? "var(--button)" : "var(--border)";
+   });
   });
 
   galleryThumbnails.appendChild(button);
  });
+ if(galleryThumbnails.firstElementChild) galleryThumbnails.firstElementChild.style.borderColor = "var(--button)";
 }
 
 /* SHOW SELECTED MAIN IMAGE */
@@ -838,6 +863,25 @@ function showMainProductImage(imageUrl){
   openViewer(imageUrl);
  } ;
                               }
+
+let galleryTouchStartX = 0;
+galleryMain.addEventListener("touchstart",function(event){
+ if(event.touches && event.touches.length === 1) galleryTouchStartX = event.touches[0].clientX;
+},{passive:true});
+galleryMain.addEventListener("touchend",function(event){
+ if(!currentGalleryImages.length || !event.changedTouches.length) return;
+ const deltaX = event.changedTouches[0].clientX - galleryTouchStartX;
+ if(Math.abs(deltaX) < 45) return;
+ let index = currentGalleryImages.indexOf(currentMainImage);
+ if(index < 0) index = 0;
+ index = deltaX < 0 ? (index + 1) % currentGalleryImages.length : (index - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+ currentMainImage = currentGalleryImages[index];
+ showMainProductImage(currentMainImage);
+ Array.from(galleryThumbnails.children).forEach(function(button,i){
+  button.style.borderColor = i === index ? "var(--button)" : "var(--border)";
+ });
+},{passive:true});
+
  /* CLOSE PRODUCT DETAILS */
 function closeProductModal(){
  productModal.classList.remove("active");
