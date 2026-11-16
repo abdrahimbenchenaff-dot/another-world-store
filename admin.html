@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,7 +120,10 @@ footer{text-align:center;color:#cdb99a;font-size:11px;padding:30px}
     <input id="productSizes" type="text" placeholder="S, M, L, XL">
 
     <label class="field-label" for="productStatus">STATUS</label>
-    <input id="productStatus" type="text" placeholder="NEW">
+    <select id="productStatus">
+      <option value="AVAILABLE">AVAILABLE</option>
+      <option value="SOLD OUT">SOLD OUT</option>
+    </select>
 
     <label class="field-label">
       <input id="productVisible" type="checkbox" checked>
@@ -882,7 +884,7 @@ $("closeButton").addEventListener("click",()=>{
 });
 
 /* LOGIN */
-$("loginForm").addEventListener("submit",async event=>{
+ $("loginForm").addEventListener("submit",async event=>{
  event.preventDefault();
 
  const button = $("loginButton");
@@ -1000,8 +1002,7 @@ async function uploadProductImage(file) {
 }
 
 /* GET STORAGE PATH FROM URL */
-
-function getProductStoragePath(value) {
+ function getProductStoragePath(value) {
   if (!value) return null;
 
   const prefix =
@@ -1075,6 +1076,7 @@ function resetProductForm() {
 
   $("productId").value = "";
   $("productVisible").checked = true;
+  $("productStatus").value = "AVAILABLE";
 
   $("mainProductPreview").replaceChildren();
 
@@ -1196,8 +1198,7 @@ async function loadProducts() {
 }
 
 /* EDIT PRODUCT */
-
-function editProduct(id) {
+ function editProduct(id) {
   const product = adminProducts.find(item => item.id === id);
 
   if (!product) return;
@@ -1208,7 +1209,7 @@ function editProduct(id) {
   $("productName").value = product.name || "";
   $("productPrice").value = product.price ?? "";
   $("productDescription").value = product.description || "";
-  $("productStatus").value = product.status || "";
+  $("productStatus").value = String(product.status || "AVAILABLE").trim().toUpperCase() === "SOLD OUT" ? "SOLD OUT" : "AVAILABLE";
   $("productVisible").checked = product.is_visible === true;
 
   $("saveProductButton").textContent = "UPDATE PRODUCT";
@@ -1308,7 +1309,7 @@ $("productForm").addEventListener("submit", async event => {
       price,
       description: $("productDescription").value.trim(),
       images,
-      status: $("productStatus").value.trim(),
+      status: $("productStatus").value,
       is_visible: $("productVisible").checked,
       updated_at: new Date().toISOString()
     };
