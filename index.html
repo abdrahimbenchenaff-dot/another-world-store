@@ -419,13 +419,11 @@ body[dir="rtl"] .game-title{letter-spacing:1px}
    </button>
    <div class="gallery-thumbnails" id="galleryThumbnails"></div>
   </div>
-  <p class="gallery-hint" data-en="SWIPE TO EXPLORE • TAP A PHOTO TO ENLARGE" data-ar="اسحب لاستكشاف الصور • اضغط على الصورة لتكبيرها">SWIPE TO EXPLORE • TAP A PHOTO TO ENLARGE</p>
   <div class="modal-details">
    <p class="eyebrow" data-en="ANOTHER WORLD COLLECTION" data-ar="مجموعة عالم آخر">ANOTHER WORLD COLLECTION</p>
    <h2 id="modalTitle">YOUR NEXT PIECE</h2>
    <p class="modal-description" id="modalDescription"></p>
    <div class="modal-price" id="modalPrice"></div>
-   <p class="modal-sizes" id="modalSizes"></p>
    <p class="modal-status" id="modalStatus"></p>
   </div>
   <a class="modal-whatsapp" id="modalWhatsapp" href="https://wa.me/213791237069" target="_blank" rel="noopener" data-en="ASK ABOUT THIS PIECE" data-ar="استفسر عن هذه القطعة">
@@ -476,7 +474,6 @@ const modalClose = document.getElementById("modalClose");
 const modalTitle = document.getElementById("modalTitle");
 const modalDescription = document.getElementById("modalDescription");
 const modalPrice = document.getElementById("modalPrice");
-const modalSizes = document.getElementById("modalSizes");
 const modalStatus = document.getElementById("modalStatus");
 const modalWhatsapp = document.getElementById("modalWhatsapp");
 
@@ -518,6 +515,9 @@ let productsData = [];
 let currentProduct = null;
 let currentGalleryImages = [];
 let currentMainImage = "";
+let currentViewerIndex = 0;
+let viewerTouchStartX = 0;
+let viewerTouchStartY = 0;
 
 let activeChallenge = null;
 let selectedAnswer = "";
@@ -563,7 +563,7 @@ let gameBusy = false;
 /* ==========================================
    THEME SYSTEM
 ========================================== */
- function updateThemeButton(){
+function updateThemeButton(){
  themeBtn.textContent = isLight
   ? (currentLanguage === "en" ? "🌙 DARK MODE" : "🌙 الوضع الداكن")
   : (currentLanguage === "en" ? "☀️ LIGHT MODE" : "☀️ الوضع الفاتح");
@@ -735,7 +735,7 @@ function renderProducts(){
 
   const price = document.createElement("p");
   price.className = "product-card-price";
-  price.textContent = formatProductPrice(product.price);
+  price.textContent = "CLICK HERE";
 
   info.append(name,price);
   card.appendChild(info);
@@ -761,7 +761,7 @@ function openProductDetails(product){
 }
 
 /* LOAD PRODUCT GALLERY FROM SUPABASE IMAGES */
- function loadGallery(product){
+function loadGallery(product){
  if(!product) return;
 
  currentProduct = product;
@@ -777,12 +777,6 @@ function openProductDetails(product){
  modalPrice.textContent = currentLanguage === "ar"
   ? "السعر: " + formatProductPrice(product.price)
   : "PRICE: " + formatProductPrice(product.price);
-
- const sizes = Array.isArray(product.sizes) ? product.sizes.filter(Boolean).join(" • ") : (product.sizes || "");
- modalSizes.textContent = sizes
-  ? (currentLanguage === "ar" ? "المقاسات: " : "SIZES: ") + sizes
-  : (currentLanguage === "ar" ? "المقاسات: تواصل معنا للتأكيد" : "SIZES: CONTACT US TO CONFIRM");
-
  const rawStatus = String(product.status || "").trim();
  const statusLabel = rawStatus ? rawStatus.toUpperCase() : (currentLanguage === "ar" ? "متوفر" : "AVAILABLE");
  modalStatus.textContent = (currentLanguage === "ar" ? "الحالة: " : "STATUS: ") + statusLabel;
@@ -804,7 +798,6 @@ function openProductDetails(product){
   galleryMain.onclick = null;
   return;
  }
-
  currentMainImage = currentGalleryImages[0];
  showMainProductImage(currentMainImage);
 
@@ -831,12 +824,9 @@ function openProductDetails(product){
   button.appendChild(image);
 
   button.addEventListener("click",function(){
-   currentMainImage = imageUrl;
-   showMainProductImage(imageUrl);
-   Array.from(galleryThumbnails.children).forEach(function(item){
-    item.style.borderColor = item === button ? "var(--button)" : "var(--border)";
+    currentMainImage = imageUrl;
+    openViewer(imageUrl);
    });
-  });
 
   galleryThumbnails.appendChild(button);
  });
@@ -844,7 +834,7 @@ function openProductDetails(product){
 }
 
 /* SHOW SELECTED MAIN IMAGE */
-function showMainProductImage(imageUrl){
+ function showMainProductImage(imageUrl){
  galleryMain.replaceChildren();
 
  const image = document.createElement("img");
@@ -902,14 +892,23 @@ productModal.addEventListener("click",function(event){
 /* ==========================================
    FULL SCREEN IMAGE VIEWER
 ========================================== */
- function openViewer(imageUrl){
+ function renderViewerImage(){
  viewerContent.querySelectorAll("img,.photo-placeholder").forEach(function(el){
   el.remove();
  });
 
+ const imageUrl = currentGalleryImages[currentViewerIndex];
+ if(!imageUrl){
+  viewerContent.appendChild(makePlaceholder(
+   currentLanguage === "ar" ? "لا توجد صور لهذا المنتج" : "NO PRODUCT PHOTOS"
+  ));
+  return;
+ }
+
  const image = document.createElement("img");
  image.src = imageUrl;
- image.alt = currentProduct ? currentProduct.name : "Product image";
+ image.alt = (currentProduct ? currentProduct.name : "Product") +
+  " - " + (currentViewerIndex + 1);
 
  image.onerror = function(){
   image.replaceWith(makePlaceholder(
@@ -918,6 +917,14 @@ productModal.addEventListener("click",function(event){
  };
 
  viewerContent.appendChild(image);
+}
+
+function openViewer(imageUrl){
+ let index = currentGalleryImages.indexOf(imageUrl);
+ if(index < 0) index = 0;
+
+ currentViewerIndex = index;
+ renderViewerImage();
 
  imageViewer.classList.add("active");
  imageViewer.setAttribute("aria-hidden","false");
@@ -925,9 +932,47 @@ productModal.addEventListener("click",function(event){
  viewerClose.focus();
 }
 
+function moveViewerImage(direction){
+ if(!currentGalleryImages.length) return;
+
+ currentViewerIndex =
+  (currentViewerIndex + direction + currentGalleryImages.length) %
+  currentGalleryImages.length;
+
+ currentMainImage = currentGalleryImages[currentViewerIndex];
+ renderViewerImage();
+}
+
+imageViewer.addEventListener("touchstart",function(event){
+ if(event.touches && event.touches.length === 1){
+  viewerTouchStartX = event.touches[0].clientX;
+  viewerTouchStartY = event.touches[0].clientY;
+ }
+},{passive:true});
+
+imageViewer.addEventListener("touchend",function(event){
+ if(!event.changedTouches || !event.changedTouches.length) return;
+
+ const deltaX = event.changedTouches[0].clientX - viewerTouchStartX;
+ const deltaY = event.changedTouches[0].clientY - viewerTouchStartY;
+
+ if(Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+
+ moveViewerImage(deltaX < 0 ? 1 : -1);
+},{passive:true});
+
 function closeViewer(){
  imageViewer.classList.remove("active");
  imageViewer.setAttribute("aria-hidden","true");
+
+ if(currentGalleryImages.length){
+  currentMainImage = currentGalleryImages[currentViewerIndex];
+  showMainProductImage(currentMainImage);
+  Array.from(galleryThumbnails.children).forEach(function(button,index){
+   button.style.borderColor =
+    index === currentViewerIndex ? "var(--button)" : "var(--border)";
+  });
+ }
 
  if(!productModal.classList.contains("active")){
   document.body.style.overflow = "";
@@ -943,12 +988,16 @@ imageViewer.addEventListener("click",function(event){
 });
 
 document.addEventListener("keydown",function(event){
- if(event.key === "Escape"){
-  if(imageViewer.classList.contains("active")){
+ if(imageViewer.classList.contains("active")){
+  if(event.key === "Escape"){
    closeViewer();
-  }else if(productModal.classList.contains("active")){
-   closeProductModal();
+  }else if(event.key === "ArrowLeft"){
+   moveViewerImage(1);
+  }else if(event.key === "ArrowRight"){
+   moveViewerImage(-1);
   }
+ }else if(event.key === "Escape" && productModal.classList.contains("active")){
+  closeProductModal();
  }
 });
 
