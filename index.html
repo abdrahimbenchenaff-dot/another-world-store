@@ -94,7 +94,7 @@ body.light-mode .hero{
  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
 }
 .product-slot{
- min-height:245px;padding:0;border:1px solid var(--border);
+ position:relative;min-height:245px;padding:0;border:1px solid var(--border);
  display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;
  text-align:center;background:var(--card);cursor:pointer;color:var(--text);
  font-family:inherit;width:100%;overflow:hidden;
@@ -115,6 +115,18 @@ body.light-mode .hero{
 .product-card-info h3{font-family:Georgia,serif;font-size:17px;margin:5px 0}
 .product-card-info p{color:var(--muted);font-size:12px;line-height:1.7;margin:6px 0}
 .product-card-price{color:var(--muted);font-size:14px;font-weight:bold}
+.product-sold-badge{
+ position:absolute;top:12px;left:12px;z-index:2;
+ padding:7px 10px;background:#a52d2d;color:#fff;
+ font-size:10px;font-weight:bold;letter-spacing:1.2px;
+}
+body[dir="rtl"] .product-sold-badge{left:auto;right:12px}
+.modal-status.available{color:#80d5a0;font-weight:bold;letter-spacing:1px}
+.modal-status.sold-out{color:#e05b5b;font-weight:bold;letter-spacing:1px}
+.modal-price.sold-out-price{
+ color:#e05b5b;text-decoration:line-through;
+ text-decoration-thickness:2px;text-decoration-color:#e05b5b;
+}
 .product-empty{
  grid-column:1/-1;text-align:center;color:var(--muted);
  padding:35px 10px;line-height:1.8;
@@ -725,6 +737,15 @@ function renderProducts(){
    card.appendChild(placeholder);
   }
 
+  const isSoldOut = String(product.status || "").trim().toUpperCase() === "SOLD OUT";
+
+  if(isSoldOut){
+   const soldBadge = document.createElement("span");
+   soldBadge.className = "product-sold-badge";
+   soldBadge.textContent = currentLanguage === "ar" ? "نفدت الكمية" : "SOLD OUT";
+   card.appendChild(soldBadge);
+  }
+
   const info = document.createElement("div");
   info.className = "product-card-info";
 
@@ -750,7 +771,6 @@ function renderProducts(){
 /* OPEN PRODUCT DETAILS */
 function openProductDetails(product){
  currentProduct = product;
-
  loadGallery(product);
 
  productModal.classList.add("active");
@@ -774,12 +794,18 @@ function loadGallery(product){
    ? "تواصل معنا لمعرفة المزيد عن هذه القطعة."
    : "Contact us to learn more about this piece.");
 
+ const isSoldOut = String(product.status || "").trim().toUpperCase() === "SOLD OUT";
+
+ modalPrice.classList.toggle("sold-out-price", isSoldOut);
  modalPrice.textContent = currentLanguage === "ar"
   ? "السعر: " + formatProductPrice(product.price)
   : "PRICE: " + formatProductPrice(product.price);
- const rawStatus = String(product.status || "").trim();
- const statusLabel = rawStatus ? rawStatus.toUpperCase() : (currentLanguage === "ar" ? "متوفر" : "AVAILABLE");
- modalStatus.textContent = (currentLanguage === "ar" ? "الحالة: " : "STATUS: ") + statusLabel;
+
+ modalStatus.classList.toggle("sold-out", isSoldOut);
+ modalStatus.classList.toggle("available", !isSoldOut);
+ modalStatus.textContent = currentLanguage === "ar"
+  ? (isSoldOut ? "الحالة: نفدت الكمية" : "الحالة: متوفر")
+  : (isSoldOut ? "STATUS: SOLD OUT" : "STATUS: AVAILABLE");
 
  const whatsappMessage = encodeURIComponent(
   "Hello, I am interested in: " + (product.name || "this product")
@@ -1077,8 +1103,7 @@ async function loadWeeklyChallenge(){
     : "سيتم الإعلان عن التحدي القادم قريباً.");
 
    return;
-  }
-
+   }
   activeChallenge = challenge;
   selectedAnswer = "";
   gameWinner = null;
