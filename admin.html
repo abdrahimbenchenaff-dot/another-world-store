@@ -121,8 +121,8 @@ footer{text-align:center;color:#cdb99a;font-size:11px;padding:30px}
 
     <label class="field-label" for="productStatus">STATUS</label>
     <select id="productStatus">
-      <option value="AVAILABLE">AVAILABLE</option>
-      <option value="SOLD OUT">SOLD OUT</option>
+      <option value="Available">Available</option>
+      <option value="Sold Out">Sold Out</option>
     </select>
 
     <label class="field-label">
@@ -920,7 +920,7 @@ $("closeButton").addEventListener("click",()=>{
 $("refreshButton").addEventListener("click",loadDashboard);
 
 /* LOGOUT */
-$("logoutButton").addEventListener("click",async()=>{
+ $("logoutButton").addEventListener("click",async()=>{
  await db.auth.signOut();
 
  dashboard.classList.add("hidden");
@@ -1076,7 +1076,7 @@ function resetProductForm() {
 
   $("productId").value = "";
   $("productVisible").checked = true;
-  $("productStatus").value = "AVAILABLE";
+  $("productStatus").value = "Available";
 
   $("mainProductPreview").replaceChildren();
 
@@ -1130,8 +1130,13 @@ async function loadProducts() {
 
       const status = document.createElement("p");
       status.className = "muted";
+      const productStatusLabel =
+        String(product.status || "").trim().toUpperCase() === "SOLD OUT"
+          ? "Sold Out"
+          : "Available";
+
       status.textContent =
-        "STATUS: " + (product.status || "—") +
+        "STATUS: " + productStatusLabel +
         " | " + (product.is_visible ? "VISIBLE" : "HIDDEN");
 
       const gallery = document.createElement("div");
@@ -1209,7 +1214,7 @@ async function loadProducts() {
   $("productName").value = product.name || "";
   $("productPrice").value = product.price ?? "";
   $("productDescription").value = product.description || "";
-  $("productStatus").value = String(product.status || "AVAILABLE").trim().toUpperCase() === "SOLD OUT" ? "SOLD OUT" : "AVAILABLE";
+  $("productStatus").value = String(product.status || "Available").trim().toLowerCase() === "sold out" ? "Sold Out" : "Available";
   $("productVisible").checked = product.is_visible === true;
 
   $("saveProductButton").textContent = "UPDATE PRODUCT";
@@ -1240,8 +1245,7 @@ async function loadProducts() {
 }
 
 /* SAVE PRODUCT */
-
-$("productForm").addEventListener("submit", async event => {
+ $("productForm").addEventListener("submit", async event => {
   event.preventDefault();
 
   if (productBusy) return;
@@ -1444,3 +1448,5 @@ checkAdmin();
 </script>
 </body>
 </html>
+
+   
